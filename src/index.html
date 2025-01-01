@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IlluminePal - EyeCare App</title>
+
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar open" id="sidebar">
+      <div class="logo">
+        <img src="../assets/logo.png" alt="Logo" />
+        <h1>IlluminePal</h1>
+      </div>
+      <ul class="menu">
+        <li class="menu-item active" data-section="home">
+          <span class="material-icons">home</span> <span >Home</span>
+        </li>
+        <li class="menu-item" data-section="reminders">
+          <span class="material-icons">alarm</span> Reminders
+        </li>
+        <li class="menu-item" data-section="exercises">
+          <span class="material-icons">self_improvement</span> Exercises
+        </li>
+        <li class="menu-item" data-section="analytics">
+          <span class="material-icons">analytics</span> Analytics
+        </li>
+        <li class="menu-item" data-section="settings">
+          <span class="material-icons">settings</span> Settings
+        </li>
+      </ul>
+    </div>
+
+    <!-- Hamburger Menu -->
+    <div class="hamburger" id="hamburger">
+      <span class="material-icons">menu</span>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+      <!-- Sections -->
+      <section id="home" class="section active">
+        <h2>Welcome to IlluminePal</h2>
+        <p>Take care of your eyes while you work!</p>
+      </section>
+
+      <section id="reminders" class="section">
+        <h2>Set Reminders</h2>
+        <input type="number" id="intervalInput" placeholder="Interval (minutes)" />
+        <button id="startReminderBtn">Set Reminder</button>
+        <p id="statusMessage">No reminders set.</p>
+      </section>
+
+      <section id="exercises" class="section">
+        <h2>Eye Exercises</h2>
+        <p>Follow these guided exercises to keep your eyes healthy.</p>
+      </section>
+
+      <section id="analytics" class="section">
+        <h2>Analytics</h2>
+        <p>View your activity and reminder history.</p>
+      </section>
+
+      <section id="settings" class="section">
+        <h2>Settings</h2>
+        <p>Customize your preferences.</p>
+      </section>
+    </div>
+
+    <script src="./renderer.js"></script>
+  </body>
+</html>

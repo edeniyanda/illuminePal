@@ -1,0 +1,113 @@
+/* General Reset */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  /* Sidebar */
+  .sidebar {
+    width: 250px;
+    background: #1a202c;
+    color: white;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    position: fixed;
+    transition: all 0.3s ease; /* Smooth transition */
+    overflow: hidden;
+  }
+  
+  /* Collapsed Sidebar */
+  .sidebar.closed {
+    width: 70px; /* Smaller width when collapsed */
+    padding: 10px;
+  }
+  
+  /* Sidebar Logo */
+  .sidebar .logo h1 {
+    font-size: 16px;
+    transition: opacity 0.3s;
+  }
+  
+  /* Hide text in collapsed sidebar */
+  .sidebar.closed .logo h1 {
+    opacity: 0;
+  }
+  
+  /* Menu Items */
+  .menu {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .menu-item {
+    padding: 10px;
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .menu-item:hover,
+  .menu-item.active {
+    background: #2d3748;
+  }
+  
+  /* Hide Menu Text When Collapsed */
+  .sidebar.closed .menu-item span {
+    margin-right: 0;
+  }
+  
+  .sidebar.closed .menu-item {
+    justify-content: center;
+  }
+  
+  .sidebar.closed .menu-item span + span {
+    display: none; /* Hide text beside icons */
+  }
+  
+  /* Hamburger Menu */
+  .hamburger {
+    font-size: 24px;
+    cursor: pointer;
+    padding: 10px;
+    position: fixed;
+    top: 10px;
+    left: 270px; /* Default position */
+    z-index: 100;
+    transition: left 0.3s ease;
+  }
+  
+  /* Adjust position when sidebar is collapsed */
+  .sidebar.closed + .hamburger {
+    left: 90px;
+  }
+  
+  /* Main Content */
+  .main-content {
+    flex-grow: 1;
+    margin-left: 250px; /* Default sidebar width */
+    padding: 20px;
+    transition: margin-left 0.3s ease; /* Smooth transition */
+  }
+  
+  /* Adjust margin when sidebar is collapsed */
+  .sidebar.closed + .main-content {
+    margin-left: 70px;
+  }
+  
+  /* Sections */
+  .section {
+    display: none;
+  }
+  
+  .section.active {
+    display: block;
+  }
+  

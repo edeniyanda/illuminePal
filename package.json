@@ -1,0 +1,29 @@
+{
+  "name": "illuminepal",
+  "version": "1.0.0",
+  "description": "A cross-platform desktop app for managing eye care with reminders, exercises, and analytics.",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "package": "electron-packager ."
+  },
+  "author": "Eden Iyanda",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/edeniyanda/illuminepal.git"
+  },
+  "keywords": [
+    "eye-care",
+    "electron",
+    "desktop-app",
+    "reminders",
+    "health"
+  ],
+  "devDependencies": {
+    "electron": "^33.2.1"
+  }
+}
