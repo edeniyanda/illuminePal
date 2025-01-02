@@ -27,9 +27,14 @@ body {
     padding: 10px;
   }
   
+  .logo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
   /* Sidebar Logo */
   .sidebar .logo h1 {
-    font-size: 16px;
+    font-size: 25px;
     transition: opacity 0.3s;
   }
   
