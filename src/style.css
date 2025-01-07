@@ -8,7 +8,7 @@ body {
   
   /* Sidebar */
   .sidebar {
-    width: 200px;
+    width: 190px;
     background: #1a202c;
     color: white;
     height: 100%;
@@ -83,14 +83,14 @@ body {
     padding: 10px;
     position: fixed;
     top: 10px;
-    left: 270px; /* Default position */
+    left: 230px; /* Default position */
     z-index: 100;
     transition: left 0.3s ease;
   }
   
   /* Adjust position when sidebar is collapsed */
   .sidebar.closed + .hamburger {
-    left: 90px;
+    left: 80px;
   }
   
   /* Main Content */
