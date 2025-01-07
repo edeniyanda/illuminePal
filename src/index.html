@@ -110,11 +110,84 @@
       
 
       <section id="reminders" class="section">
-        <h2>Set Reminders</h2>
-        <input type="number" id="intervalInput" placeholder="Interval (minutes)" />
-        <button id="startReminderBtn">Set Reminder</button>
-        <p id="statusMessage">No reminders set.</p>
+        <h2>Reminder Settings</h2>
+        <div class="reminder-settings">
+          <!-- Long Break Settings -->
+          <div class="setting-item">
+            <label>
+              <input type="checkbox" id="longBreakEnabled" checked />
+              Do long break every
+            </label>
+            <select id="longBreakInterval">
+              <option>20 minutes</option>
+              <option>30 minutes</option>
+              <option>40 minutes</option>
+              <option>50 minutes</option>
+              <option>60 minutes</option>
+            </select>
+            for
+            <select id="longBreakDuration">
+              <option>1 minute</option>
+              <option>3 minutes</option>
+              <option>5 minutes</option>
+              <option>10 minutes</option>
+            </select>
+          </div>
+      
+          <!-- Long Break Notification -->
+          <div class="setting-item">
+            <label>
+              <input type="checkbox" id="notifyBeforeLongBreak" checked />
+              Notify about long break before
+            </label>
+            <select id="notifyBeforeInterval">
+              <option>1 minute</option>
+              <option>2 minutes</option>
+              <option>5 minutes</option>
+            </select>
+          </div>
+      
+          <!-- Short Break Settings -->
+          <div class="setting-item">
+            <label>
+              <input type="checkbox" id="shortBreakEnabled" checked />
+              Do short breaks every
+            </label>
+            <select id="shortBreakInterval">
+              <option>5 minutes</option>
+              <option>8 minutes</option>
+              <option>10 minutes</option>
+              <option>15 minutes</option>
+            </select>
+          </div>
+      
+          <!-- Sound and Strict Mode -->
+          <div class="setting-item">
+            <label>
+              <input type="checkbox" id="enableSounds" checked />
+              Enable sounds
+            </label>
+          </div>
+          <div class="setting-item">
+            <label>
+              <input type="checkbox" id="strictMode" />
+              Enable strict mode
+            </label>
+          </div>
+      
+          <!-- Buttons for Testing Breaks -->
+          <div class="buttons">
+            <button id="tryShortBreak">Try short break</button>
+            <button id="tryLongBreak">Try long break</button>
+          </div>
+        </div>
+      
+        <!-- Save and Close -->
+        <div class="footer-buttons">
+          <button id="saveSettings">Save and Close</button>
+        </div>
       </section>
+      
 
       <section id="exercises" class="section">
         <h2>Eye Exercises</h2>
@@ -133,5 +206,6 @@
     </div>
 
     <script src="./renderer.js"></script>
+    <script src="./reminder.js"></script>
   </body>
 </html>
