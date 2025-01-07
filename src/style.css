@@ -91,7 +91,7 @@ body {
   
   /* Adjust position when sidebar is collapsed */
   .sidebar.closed + .hamburger {
-    left: 80px; 
+    left: 90px; 
   }
   
   /* Main Content */

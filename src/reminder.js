@@ -47,8 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Event listeners
   saveSettings.addEventListener('click', saveSettingsToLocalStorage);
 
-  tryShortBreak.addEventListener('click', () => alert('Starting short break...'));
-  tryLongBreak.addEventListener('click', () => alert('Starting long break...'));
+  // tryShortBreak.addEventListener('click', () => alert('Starting short break...'));
+  // tryLongBreak.addEventListener('click', () => alert('Starting long break...'));
 
 
   // List of Eye Exercises
@@ -82,23 +82,45 @@ document.addEventListener('DOMContentLoaded', () => {
     notification.classList.add('hidden');
   }
 
-  // Schedule Short Break Reminders
+  // Global variable to track the timer ID
+  let shortBreakTimer = null;
+
+  // Schedule Short Break Reminders with Countdown
   function scheduleShortBreaks(intervalInMinutes) {
-    const intervalInMs = intervalInMinutes * 60 * 1000; // Convert to milliseconds
-    setInterval(() => {
-      showNotification();
-    }, intervalInMs);
+    // Clear any existing timer to avoid duplicates
+    if (shortBreakTimer) {
+      clearTimeout(shortBreakTimer);
+      console.log('Previous short break timer cleared.');
+    }
+
+    // Validate interval input
+    const interval = parseInt(intervalInMinutes);
+    if (isNaN(interval) || interval <= 0) {
+      alert('Invalid interval. Please enter a valid time in minutes.');
+      return; // Exit if input is invalid
+    }
+
+    // Convert minutes to milliseconds
+    const intervalInMs = 0.2 * 60 * 1000; // Minutes to milliseconds
+
+    console.log(`Short break reminder set for ${interval} minutes.`);  
+
+    // Start countdown timer
+    shortBreakTimer = setTimeout(() => { 
+      showNotification(); // Display the notification
+      console.log('Notification displayed!');
+    }, intervalInMs); // Wait for the selected time before showing notification
   }
-
-  // Event Listener for Dismissing Notification
-  dismissNotification.addEventListener('click', hideNotification);
-
-  // Start Short Break Reminders
-  const defaultShortBreakInterval = 8; // Default interval (minutes)
-  scheduleShortBreaks(defaultShortBreakInterval);
   
   tryShortBreak.addEventListener('click', () => {
-    showNotification(); // Trigger notification for testing
+    // alert('Starting short break...');
+    console.log('Starting short break...');
+    scheduleShortBreaks(shortBreakInterval.value);
+  });
+
+  dismissNotification.addEventListener('click', () => {
+    hideNotification();
+    console.log('Notification dismissed.');
   });
 
 
