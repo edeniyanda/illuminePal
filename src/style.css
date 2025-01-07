@@ -379,3 +379,70 @@ button:hover {
 .footer-buttons button:hover {
   background: #2b6cb0;
 }
+
+
+
+
+/* 
+
+  Notifivation Modal 
+
+*/
+
+/* Notification Modal */
+.notification {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  padding: 20px;
+  background: #4a5568;
+  color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  text-align: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.notification.hidden {
+  display: none;
+}
+
+.notification h3 {
+  margin-top: 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.notification p {
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+.notification button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  background: #3182ce;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.notification button:hover {
+  background: #2b6cb0;
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -55%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
