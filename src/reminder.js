@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+  
   // Retrieve UI elements
   const longBreakEnabled = document.getElementById('longBreakEnabled');
   const longBreakInterval = document.getElementById('longBreakInterval');
@@ -64,66 +65,41 @@ document.addEventListener('DOMContentLoaded', () => {
     "Look left, then right—then up and down. Repeat 10 times.",
     "Blink slowly 10 times to hydrate your eyes."
   ];
-
-  // Notification Elements
-  const notification = document.getElementById('shortBreakNotification');
-  const exerciseTip = document.getElementById('exerciseTip');
-  const dismissNotification = document.getElementById('dismissNotification');
-
-  // Show Notification with Random Exercise
-  function showNotification() {
+  
+  // Show Popup Notification
+  function showPopupNotification() {
     const randomExercise = eyeExercises[Math.floor(Math.random() * eyeExercises.length)];
-    exerciseTip.innerText = randomExercise;
-    notification.classList.remove('hidden');
+    window.electronAPI.send('show-popup', randomExercise); // Use the exposed API
   }
 
-  // Hide Notification
-  function hideNotification() {
-    notification.classList.add('hidden');
-  }
-
-  // Global variable to track the timer ID
-  let shortBreakTimer = null;
-
-  // Schedule Short Break Reminders with Countdown
+  // Timer Countdown Function
   function scheduleShortBreaks(intervalInMinutes) {
-    // Clear any existing timer to avoid duplicates
-    if (shortBreakTimer) {
-      clearTimeout(shortBreakTimer);
-      console.log('Previous short break timer cleared.');
-    }
-
-    // Validate interval input
     const interval = parseInt(intervalInMinutes);
+
+    // Validate input
     if (isNaN(interval) || interval <= 0) {
       alert('Invalid interval. Please enter a valid time in minutes.');
-      return; // Exit if input is invalid
+      return;
     }
 
-    // Convert minutes to milliseconds
-    const intervalInMs = 0.2 * 60 * 1000; // Minutes to milliseconds
+    const intervalInMs = 0.01 * 60 * 1000; // Convert minutes to milliseconds
 
-    console.log(`Short break reminder set for ${interval} minutes.`);  
+    console.log(`Short break reminder scheduled in ${interval} minutes.`);
 
-    // Start countdown timer
-    shortBreakTimer = setTimeout(() => { 
-      showNotification(); // Display the notification
-      console.log('Notification displayed!');
-    }, intervalInMs); // Wait for the selected time before showing notification
+    // Set timeout for the reminder
+    setTimeout(() => {
+      showPopupNotification(); // Trigger the popup
+    }, intervalInMs);
   }
-  
+
+  // Event Listener for Short Break Button
   tryShortBreak.addEventListener('click', () => {
-    // alert('Starting short break...');
     console.log('Starting short break...');
-    scheduleShortBreaks(shortBreakInterval.value);
-  });
-
-  dismissNotification.addEventListener('click', () => {
-    hideNotification();
-    console.log('Notification dismissed.');
+    scheduleShortBreaks(shortBreakInterval.value); // Use user input
   });
 
 
+  console.log('Reminder script loaded successfully!');
   // Initialize settings on load
   loadSettings();
 });

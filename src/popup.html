@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Popup</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      }
+      h3 {
+        margin: 10px 0;
+      }
+      p {
+        font-size: 16px;
+        margin: 5px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>Time for a Short Break!</h3>
+    <p id="popupMessage">Blink your eyes quickly for 10 seconds!</p>
+  </body>
+  <script>
+    const { ipcRenderer } = require('electron');
+    ipcRenderer.on('update-message', (event, message) => {
+      document.getElementById('popupMessage').innerText = message;
+    });
+  </script>
+</html>
