@@ -1,10 +1,9 @@
 /* General Reset */
 body {
-    margin: 0;
-    font-family: 'Arial', sans-serif;
-    display: flex;
-    height: 100vh;
-    overflow: hidden;
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  height: 100vh;
+  overflow: hidden;
   }
   
   /* Sidebar */
@@ -97,9 +96,10 @@ body {
   /* Main Content */
   .main-content {
     flex-grow: 1;
-    margin-left: 250px; /* Default sidebar width */
+    margin-left: 250px;
     padding: 20px;
-    transition: margin-left 0.3s ease; /* Smooth transition */
+    overflow-y: auto; /* Enable scrolling */
+    max-height: 100vh; /* Ensure it respects the viewport height */
   }
   
   /* Adjust margin when sidebar is collapsed */
@@ -115,6 +115,48 @@ body {
   .section.active {
     display: block;
   }
+
+
+
+/* Streak Container */
+.streak-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: #f7fafc;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  flex-wrap: wrap; /* Make it responsive */
+}
+
+.streak-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  border-radius: 8px;
+  background: #3182ce;
+  color: white;
+  flex-shrink: 0;
+}
+
+.streak-icon span {
+  font-size: 40px;
+  color: #ffdd57;
+}
+
+.streak-details h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.streak-details p {
+  margin: 0;
+  font-size: 14px;
+}
   
 
 /* Home Header */
@@ -136,9 +178,8 @@ body {
 /* Features Grid */
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
   gap: 20px;
-  padding: 10px;
 }
 
 .feature-card {
@@ -184,4 +225,30 @@ body {
 
 .feature-card button:hover {
   background: #2b6cb0;
+}
+
+/* Scrollbar Styling */
+.main-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+/* Responsive Tweaks */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 70px; /* Adjust when sidebar is collapsed */
+  }
+
+  .streak-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }

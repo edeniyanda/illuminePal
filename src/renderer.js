@@ -48,5 +48,56 @@ document.addEventListener('DOMContentLoaded', () => {
       window.electronAPI.sendMessage('navigate-to', 'analytics');
     });
     
+    // Streak Logic
+    const streakKey = 'eyeCareStreak';
+    const lastUsedKey = 'lastUsedDate';
+
+    // Get stored data
+    let streakCount = parseInt(localStorage.getItem(streakKey)) || 0;
+    const lastUsedDate = localStorage.getItem(lastUsedKey) || null;
+    const today = new Date().toDateString();
+
+    // Function to update the streak
+    function updateStreak() {
+      if (lastUsedDate === today) {
+        // User already logged in today
+        document.getElementById('streakCount').innerText = streakCount;
+      } else {
+        const lastDate = new Date(lastUsedDate);
+        const todayDate = new Date(today);
+
+        const diff = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
+
+        if (diff === 1) {
+          // Increment streak if it's the next day
+          streakCount++;
+        } else if (diff > 1) {
+          // Reset streak if the gap is more than a day
+          streakCount = 1;
+        }
+
+        // Update values
+        localStorage.setItem(streakKey, streakCount);
+        localStorage.setItem(lastUsedKey, today);
+        document.getElementById('streakCount').innerText = streakCount;
+      }
+    }
+
+    // Initialize streak count
+    updateStreak();
+
+    // Buttons for quick navigation
+    document.getElementById('setReminderBtn').addEventListener('click', () => {
+      window.electronAPI.sendMessage('navigate-to', 'reminders');
+    });
+
+    document.getElementById('startExerciseBtn').addEventListener('click', () => {
+      window.electronAPI.sendMessage('navigate-to', 'exercises');
+    });
+
+    document.getElementById('viewAnalyticsBtn').addEventListener('click', () => {
+      window.electronAPI.sendMessage('navigate-to', 'analytics');
+    });
+
 });
   
