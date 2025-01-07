@@ -124,40 +124,89 @@ body {
   align-items: center;
   gap: 20px;
   padding: 20px;
-  background: #f7fafc;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
-  flex-wrap: wrap; /* Make it responsive */
+  flex-wrap: wrap; /* Responsive */
 }
 
-.streak-card {
+/* Progress Ring */
+.streak-progress {
+  position: relative;
+  width: 120px;
+  height: 120px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 15px;
-  border-radius: 8px;
-  background: #3182ce;
-  color: white;
-  flex-shrink: 0;
+  justify-content: center;
 }
 
-.streak-icon span {
-  font-size: 40px;
-  color: #ffdd57;
+svg {
+  transform: rotate(-90deg); /* Make it start from the top */
 }
 
-.streak-details h2 {
-  margin: 0;
+.bg-ring {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.3);
+  stroke-width: 8;
+}
+
+.progress-ring {
+  fill: none;
+  stroke: #ffdd57;
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 314; /* Circumference = 2 * π * r (50) */
+  stroke-dashoffset: 314; /* Initially empty */
+  transition: stroke-dashoffset 0.5s ease-in-out;
+}
+
+/* Streak Count */
+.streak-count {
+  position: absolute;
+  text-align: center;
+}
+
+.streak-count h2 {
   font-size: 28px;
+  margin: 0;
+}
+
+.streak-count p {
+  font-size: 12px;
+  margin: 0;
+}
+
+/* Streak Info */
+.streak-info h3 {
+  margin: 0;
+  font-size: 18px;
   font-weight: bold;
 }
 
-.streak-details p {
-  margin: 0;
+.streak-info p {
   font-size: 14px;
+  margin: 10px 0;
 }
-  
+
+/* Badges */
+.badges {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.badge {
+  padding: 5px 10px;
+  background: #ffdd57;
+  color: #333;
+  font-size: 12px;
+  border-radius: 20px;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 
 /* Home Header */
 .home-header {

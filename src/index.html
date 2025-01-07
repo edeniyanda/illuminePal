@@ -53,20 +53,30 @@
       
         <!-- Streak Section -->
         <div class="streak-container">
-          <div class="streak-card">
-            <div class="streak-icon">
-              <span class="material-icons">local_fire_department</span>
-            </div>
-            <div class="streak-details">
+          <!-- Progress Circle -->
+          <div class="streak-progress">
+            <svg width="120" height="120">
+              <circle class="bg-ring" cx="60" cy="60" r="50"></circle>
+              <circle class="progress-ring" id="progressRing" cx="60" cy="60" r="50"></circle>
+            </svg>
+            <div class="streak-count">
               <h2 id="streakCount">1</h2>
-              <p>Days in a row</p>
+              <p>Days</p>
             </div>
           </div>
+
+          <!-- Streak Info -->
           <div class="streak-info">
-            <h3>Keep it up!</h3>
-            <p>Stay consistent to protect your eyes and maintain your streak.</p>
+            <h3>🔥 Keep it up!</h3>
+            <p>You're on a roll! Stay consistent to protect your eyes and maintain your streak.</p>
+            <div class="badges">
+              <span class="badge">7 Days</span>
+              <span class="badge">14 Days</span>
+              <span class="badge">30 Days</span>
+            </div>
           </div>
         </div>
+
       
         <!-- Features Section -->
         <div class="features-grid">

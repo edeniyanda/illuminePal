@@ -58,38 +58,44 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById(sectionId).classList.add('active');
   }
     // Streak Logic
-    const streakKey = 'eyeCareStreak';
-    const lastUsedKey = 'lastUsedDate';
+const streakKey = 'eyeCareStreak';
+const lastUsedKey = 'lastUsedDate';
 
-    // Get stored data
-    let streakCount = parseInt(localStorage.getItem(streakKey)) || 0;
-    const lastUsedDate = localStorage.getItem(lastUsedKey) || null;
-    const today = new Date().toDateString();
+// Get stored data
+let streakCount = parseInt(localStorage.getItem(streakKey)) || 0;
+const lastUsedDate = localStorage.getItem(lastUsedKey) || null;
+const today = new Date().toDateString();
 
-    // Function to update the streak
-    function updateStreak() {
-      if (lastUsedDate === today) {
-        // User already logged in today
-        document.getElementById('streakCount').innerText = streakCount;
-      } else {
-        const lastDate = new Date(lastUsedDate);
-        const todayDate = new Date(today);
+// Function to update the streak
+function updateStreak() {
+  const progressRing = document.getElementById('progressRing');
+  const totalDays = 30; // Set target streak days for progress
+  const circumference = 314; // 2 * π * r (radius = 50)
 
-        const diff = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
+  if (lastUsedDate === today) {
+    // User already logged in today
+    document.getElementById('streakCount').innerText = streakCount;
+  } else {
+    const lastDate = new Date(lastUsedDate);
+    const todayDate = new Date(today);
 
-        if (diff === 1) {
-          // Increment streak if it's the next day
-          streakCount++;
-        } else if (diff > 1) {
-          // Reset streak if the gap is more than a day
-          streakCount = 1;
-        }
+    const diff = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
 
-        // Update values
-        localStorage.setItem(streakKey, streakCount);
-        localStorage.setItem(lastUsedKey, today);
-        document.getElementById('streakCount').innerText = streakCount;
-      }
+    if (diff === 1) {
+      streakCount++; // Increment streak
+    } else if (diff > 1) {
+      streakCount = 1; // Reset streak if missed
+    }
+
+    // Update values
+    localStorage.setItem(streakKey, streakCount);
+    localStorage.setItem(lastUsedKey, today);
+    document.getElementById('streakCount').innerText = streakCount;
+  }
+
+    // Update Progress Ring
+    const progress = (streakCount / totalDays) * circumference;
+    progressRing.style.strokeDashoffset = circumference - progress;
     }
 
     // Initialize streak count
