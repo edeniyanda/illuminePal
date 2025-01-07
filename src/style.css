@@ -41,6 +41,7 @@ body {
   .sidebar.closed .logo h1 {
     opacity: 0;
   }
+
   
   /* Menu Items */
   .menu {
@@ -90,21 +91,22 @@ body {
   
   /* Adjust position when sidebar is collapsed */
   .sidebar.closed + .hamburger {
-    left: 80px;
+    left: 80px; 
   }
   
   /* Main Content */
   .main-content {
-    flex-grow: 1;
+    /* flex-grow: 1; */
     margin-left: 250px;
     padding: 20px;
     overflow-y: auto; /* Enable scrolling */
     max-height: 100vh; /* Ensure it respects the viewport height */
+    transition: margin-left 0.3s ease; /* Smooth transition */
   }
   
   /* Adjust margin when sidebar is collapsed */
   .sidebar.closed + .main-content {
-    margin-left: 70px;
+    margin-left: 500px;
   }
   
   /* Sections */

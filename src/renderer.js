@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Toggle Sidebar Open/Close
   hamburger.addEventListener('click', () => {
     sidebar.classList.toggle('closed');
-    mainContent.style.marginLeft = sidebar.classList.contains('closed') ? '70px' : '250px';
+    mainContent.style.marginLeft = sidebar.classList.contains('closed') ? '100px' : '250px';
   });
 
   // Menu Navigation
