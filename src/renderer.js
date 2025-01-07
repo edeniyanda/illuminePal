@@ -36,5 +36,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById(sectionId).classList.add('active');
       });
     });
-  });
+    document.getElementById('setReminderBtn').addEventListener('click', () => {
+      window.electronAPI.sendMessage('navigate-to', 'reminders');
+    });
+    
+    document.getElementById('startExerciseBtn').addEventListener('click', () => {
+      window.electronAPI.sendMessage('navigate-to', 'exercises');
+    });
+    
+    document.getElementById('viewAnalyticsBtn').addEventListener('click', () => {
+      window.electronAPI.sendMessage('navigate-to', 'analytics');
+    });
+    
+});
   
