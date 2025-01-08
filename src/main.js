@@ -3,54 +3,71 @@ const path = require('path');
 
 // Create the main window
 let mainWindow;
-let popupWindow;
+let popupWindow; // Add popup window reference
 
 const createWindow = () => {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true,
-      enableRemoteModule: false,
-      nodeIntegration: false,
+      preload: path.join(__dirname, 'preload.js'), // Ensure preload.js exists
     },
   });
 
-  mainWindow.loadFile('src/index.html');
+  // Load the HTML file
+  mainWindow.loadFile('src/index.html'); // Ensure this file exists
+
+  // Open DevTools (optional, for debugging)
   mainWindow.webContents.openDevTools();
 };
 
-const createPopupWindow = () => {
+// Create Popup Window
+function createPopupWindow() {
   popupWindow = new BrowserWindow({
-    width: 400,
+    width: 350,
     height: 200,
-    frame: false,
-    transparent: true,
-    alwaysOnTop: true,
+    frame: false, // Remove title bar
+    alwaysOnTop: true, // Ensure popup appears above all windows
+    transparent: true, // Transparent background
+    skipTaskbar: true, // Don't show in taskbar
+    resizable: false,
     webPreferences: {
-      preload: path.join(__dirname, 'preloads/popup-preload.js'), // Preload for popup
-      contextIsolation: true,
-      enableRemoteModule: false,
-      nodeIntegration: false,
+      preload: path.join(__dirname, 'preload.js'), // Use preload for IPC
     },
   });
 
-  popupWindow.loadFile('src/popup.html');
-  popupWindow.hide(); // Hide initially
-};
+  popupWindow.loadFile('src/popup.html'); // Ensure popup.html exists
+
+  popupWindow.on('closed', () => {
+    popupWindow = null; // Clear reference on close
+  });
+}
 
 // Handle 'show-popup' Event
 ipcMain.on('show-popup', (event, message) => {
-  console.log('Showing popup with message:', message); // Debugging
-  popupWindow.webContents.send('update-message', message); // Send message to popup
-  popupWindow.show(); // Show popup
-  setTimeout(() => popupWindow.hide(), 10000); // Hide after 10 seconds
+  if (!popupWindow) {
+    createPopupWindow(); // Create popup if not already created
+  }
+
+  // Ensure popup window is still valid before accessing it
+  if (popupWindow && !popupWindow.isDestroyed()) {
+    popupWindow.webContents.send('update-message', message); // Update message
+    popupWindow.show(); // Show popup window
+
+    console.log('Showing popup with message:', message);
+
+    // Automatically close popup after 10 seconds
+    setTimeout(() => {
+      if (popupWindow && !popupWindow.isDestroyed()) {
+        popupWindow.hide();
+      }
+    }, 10000); // 10 seconds
+  }
 });
 
+// App is ready
 app.whenReady().then(() => {
   createWindow();
-  createPopupWindow();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -59,6 +76,7 @@ app.whenReady().then(() => {
   });
 });
 
+// Quit the app when all windows are closed (except Mac)
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();

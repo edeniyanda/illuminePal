@@ -3,27 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Popup</title>
+    <title>IlluminePal Reminder</title>
     <style>
-      /* Popup Container */
       body {
         margin: 0;
-        padding: 10px;
-        font-family: Arial, sans-serif;
+        padding: 15px;
+        font-family: 'Arial', sans-serif;
         text-align: center;
-        background: rgba(0, 0, 0, 0.9);
+        background: rgba(0, 0, 0, 0.85);
         color: white;
         border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
         width: 300px;
-        height: 150px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
+        height: 180px;
       }
 
-      /* App Name and Icon */
+      .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        height: 100%;
+      }
+
       .header {
         display: flex;
         align-items: center;
@@ -36,61 +38,76 @@
         height: 40px;
       }
 
-      .header h3 {
+      h3 {
         margin: 0;
         font-size: 18px;
         font-weight: bold;
       }
 
-      /* Message Style */
-      .message {
-        font-size: 14px;
-        margin: 5px 0;
+      p {
+        font-size: 15px;
+        margin: 10px 0;
       }
 
-      /* Countdown Timer Style */
-      .timer {
-        font-size: 20px;
+      .countdown {
+        font-size: 24px;
         font-weight: bold;
-        margin-top: 10px;
         color: yellow;
+      }
+
+      .footer {
+        font-size: 12px;
+        opacity: 0.7;
+        margin-top: 10px;
       }
     </style>
   </head>
   <body>
-    <!-- App Header -->
-    <div class="header">
-      <img src="../assets/logo.png" alt="IlluminePal Logo" />
-      <h3>IlluminePal</h3>
+    <div class="container">
+      <div class="header">
+        <img src="../assets/logo.png" alt="Logo" />
+        <h3>IlluminePal</h3>
+      </div>
+      <p id="popupMessage">Blink your eyes quickly for 10 seconds!</p>
+      <div class="countdown" id="countdown">10</div>
+      <div class="footer">Take care of your eyes!</div>
     </div>
-
-    <!-- Message Section -->
-    <p id="popupMessage" class="message">Blink your eyes quickly for 10 seconds!</p>
-    <div id="timer" class="timer">10</div> <!-- Countdown Timer -->
   </body>
+
   <script>
     // Electron API Communication
     window.electronAPI.receive('update-message', (message) => {
-      const messageEl = document.getElementById('popupMessage');
-      const timerEl = document.getElementById('timer');
+  const messageEl = document.getElementById('popupMessage');
+  const timerEl = document.getElementById('countdown');
 
-      // Update message
-      messageEl.innerText = message;
-      console.log('Popup received message:', message);
+  // Update the message
+  messageEl.innerText = message;
+  console.log('Popup received message:', message);
 
-      // Countdown Timer
-      let countdown = 10; // 10 seconds
-      timerEl.innerText = countdown;
+  // Countdown Timer
+  let countdown = 10; // 10 seconds
+  timerEl.innerText = countdown;
 
-      const interval = setInterval(() => {
-        countdown--;
-        timerEl.innerText = countdown;
+  // Create the countdown interval
+  const interval = setInterval(() => {
+    countdown--;
+    timerEl.innerText = countdown;
 
-        if (countdown <= 0) {
-          clearInterval(interval);
-          window.close(); // Auto-close after countdown
-        }
-      }, 1000);
-    });
+    // When countdown reaches 0, clear interval and close window
+    if (countdown <= 0) {
+      clearInterval(interval); // Ensure timer stops before closing
+      window.close(); // Auto-close the popup
+    }
+  }, 1000);
+ 
+  // Ensure timer stops if the window is closed manually
+  window.addEventListener('beforeunload', () => {
+    clearInterval(interval); // Clear the interval when closing
+  });
+});
+
   </script>
 </html>
+
+
+ 
