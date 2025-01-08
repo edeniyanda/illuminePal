@@ -29,9 +29,10 @@
     <p id="popupMessage">Blink your eyes quickly for 10 seconds!</p>
   </body>
   <script>
-    const { ipcRenderer } = require('electron');
-    ipcRenderer.on('update-message', (event, message) => {
+    // Use the exposed API from preload.js
+    window.electronAPI.receive('update-message', (message) => {
       document.getElementById('popupMessage').innerText = message;
+      console.log('Popup received message:', message); // Debugging
     });
   </script>
 </html>

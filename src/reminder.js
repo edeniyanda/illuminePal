@@ -66,10 +66,10 @@ document.addEventListener('DOMContentLoaded', () => {
     "Blink slowly 10 times to hydrate your eyes."
   ];
   
-  // Show Popup Notification
   function showPopupNotification() {
     const randomExercise = eyeExercises[Math.floor(Math.random() * eyeExercises.length)];
-    window.electronAPI.send('show-popup', randomExercise); // Use the exposed API
+    window.electronAPI.send('show-popup', randomExercise); // Send to main process
+    console.log('Popup triggered with:', randomExercise); // Debugging
   }
 
   // Timer Countdown Function
