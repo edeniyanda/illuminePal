@@ -3,36 +3,86 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Long Break</title>
+  <title>IlluminePal - Long Break</title>
   <style>
     body {
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background: rgba(0, 0, 0, 0.9);
+      margin: 0;
+      background: rgba(0, 0, 0, 0.85);
       color: white;
       font-family: Arial, sans-serif;
     }
+
     .container {
       text-align: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.95);
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      max-width: 400px;
+      width: 100%;
     }
-    h1 {
-      margin: 10px 0;
-    }
-    p {
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
       margin-bottom: 20px;
     }
+
+    .header img {
+      width: 40px;
+      height: 40px;
+    }
+
+    .header h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    h1 {
+      margin: 10px 0;
+      font-size: 24px;
+    }
+
+    p {
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+
+    #timer {
+      font-size: 32px;
+      font-weight: bold;
+      color: #FFD700;
+      margin-bottom: 20px;
+    }
+
     button {
       padding: 10px 20px;
       font-size: 16px;
       cursor: pointer;
       border-radius: 5px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
   <div class="container">
+    <div class="header">
+      <img src="../../assets/logo.png" alt="IlluminePal Logo" />
+      <h2>IlluminePal</h2>
+    </div>
     <h1>It's time for a long break.</h1>
     <p>Spend a few minutes taking rest from the display.</p>
     <h2 id="timer">5:00</h2>
@@ -60,6 +110,7 @@
 
     document.getElementById('skip').addEventListener('click', () => {
       clearInterval(interval);
+      ipcRenderer.send('long-break-skipped'); // Notify main process if needed
       window.close();
     });
   </script>

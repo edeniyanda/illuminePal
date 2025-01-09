@@ -21,13 +21,13 @@ const createWindow = () => {
 
   // Open DevTools (optional, for debugging)
   mainWindow.webContents.openDevTools();
-};
+}; 
 
 // Create Popup Window
 function createPopupWindow() {
   popupWindow = new BrowserWindow({
     width: 350,
-    height: 200,
+    height: 200, 
     frame: false, // Remove title bar
     alwaysOnTop: true, // Ensure popup appears above all windows
     transparent: true, // Transparent background
@@ -75,7 +75,7 @@ function startLongBreak(durationInMinutes) {
   if (longBreakWindow) {
     longBreakWindow.focus(); // Focus if already exists
     return;
-  }
+  } 
 
   longBreakWindow = new BrowserWindow({
     width: 800,
@@ -84,6 +84,7 @@ function startLongBreak(durationInMinutes) {
     alwaysOnTop: true,
     fullscreen: true, // Fullscreen mode
     resizable: false,
+    transparent: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,

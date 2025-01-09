@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Long Break Functionality
   function scheduleLongBreak(intervalInMinutes, durationInMinutes, notifyBefore) {
     const notifyBeforeMs = 0.2 * 60 * 1000; // Notify time in milliseconds
-    const intervalMs = 0.4 * 60 * 1000; // Interval time in milliseconds
+    const intervalMs = 0.01 * 60 * 1000; // Interval time in milliseconds
     const durationMs = 0.3 * 60 * 1000; // Duration time in milliseconds
 
     console.log(`Long break scheduled in ${intervalInMinutes} minutes.`);
