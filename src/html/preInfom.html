@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IlluminePal - Long Break</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.85);
+        color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+        width: 350px;
+        height: 200px;
+      }
+      h3 {
+        margin: 10px 0;
+      }
+      p {
+        margin: 10px 0;
+        font-size: 16px;
+      }
+      button {
+        margin: 10px;
+        padding: 10px 15px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>It's Time for a Long Break!</h3>
+    <p>Are you ready?</p>
+    <button id="startNow">Start Break Now</button>
+    <button id="remindLater">Give me 3 minutes</button>
+
+    <script>
+      const { ipcRenderer } = require('electron');
+
+      // Handle 'Start Break Now' button
+      document.getElementById('startNow').addEventListener('click', () => {
+        ipcRenderer.send('start-long-break', 5); // Default 5 minutes
+        window.close(); // Close popup
+      });
+
+      // Handle 'Remind Me Later' button
+      document.getElementById('remindLater').addEventListener('click', () => {
+        ipcRenderer.send('delay-long-break', 3); // Delay by 3 minutes
+        window.close(); // Close popup
+      });
+    </script>
+  </body>
+</html>

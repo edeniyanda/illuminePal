@@ -13,9 +13,9 @@
 
 const { contextBridge, ipcRenderer } = require('electron');
 
-// Expose safe APIs to the renderer process
+// Expose IPC communication to renderer
 contextBridge.exposeInMainWorld('electronAPI', {
-  send: (channel, data) => ipcRenderer.send(channel, data),
-  receive: (channel, func) =>
-    ipcRenderer.on(channel, (event, ...args) => func(...args)),
+  send: (channel, data) => ipcRenderer.send(channel, data), // Send event to main process
+  receive: (channel, callback) =>
+    ipcRenderer.on(channel, (event, ...args) => callback(...args)),
 });

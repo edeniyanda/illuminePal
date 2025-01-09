@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Long Break</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      text-align: center;
+    }
+    h1 {
+      margin: 10px 0;
+    }
+    p {
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>It's time for a long break.</h1>
+    <p>Spend a few minutes taking rest from the display.</p>
+    <h2 id="timer">5:00</h2>
+    <button id="skip">Skip</button>
+  </div>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+
+    let countdown = 300; // 5 minutes in seconds
+    const timerEl = document.getElementById('timer');
+
+    const interval = setInterval(() => {
+      const minutes = Math.floor(countdown / 60);
+      const seconds = countdown % 60;
+      timerEl.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+      if (countdown <= 0) {
+        clearInterval(interval);
+        window.close(); // Close the window when the timer finishes
+      }
+
+      countdown--;
+    }, 1000);
+
+    document.getElementById('skip').addEventListener('click', () => {
+      clearInterval(interval);
+      window.close();
+    });
+  </script>
+</body>
+</html>

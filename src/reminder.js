@@ -90,15 +90,53 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       showPopupNotification(); // Trigger the popup
     }, intervalInMs);
+  } 
+
+  
+  // ========================
+  // Long Break Functionality
+  function scheduleLongBreak(intervalInMinutes, durationInMinutes, notifyBefore) {
+    const notifyBeforeMs = 0.2 * 60 * 1000; // Notify time in milliseconds
+    const intervalMs = 0.4 * 60 * 1000; // Interval time in milliseconds
+    const durationMs = 0.3 * 60 * 1000; // Duration time in milliseconds
+
+    console.log(`Long break scheduled in ${intervalInMinutes} minutes.`);
+
+    // Pre-inform the user before the break
+    // setTimeout(() => {        
+    //   window.electronAPI.send('show-preinform', "Hello"); // Trigger pre-inform window
+    //   console.log("Made it here");
+    // }, intervalInMs - notifyBeforeMs); // Notify before actual break time
+
+    // Start the long break
+    setTimeout(() => {
+      window.electronAPI.send('start-long-break', durationMs); // Trigger long break window
+      console.log("Let the break Begins")
+    }, intervalMs); // Actual break time
   }
+  
+  // ========================
+  // Button Handlers
 
   // Event Listener for Short Break Button
   tryShortBreak.addEventListener('click', () => {
+    if (!shortBreakEnabled.checked) {
+      alert('Short breaks are disabled. Enable them in Reminder settings.');
+      return;
+    }
     console.log('Starting short break...');
     scheduleShortBreaks(shortBreakInterval.value); // Use user input
   });
 
-
+  tryLongBreak.addEventListener('click', () => {
+    console.log('Starting long break...');
+    const interval = parseInt(longBreakInterval.value);
+    const duration = parseInt(longBreakDuration.value);
+    const notifyBefore = parseInt(notifyBeforeInterval.value);
+    
+    scheduleLongBreak(interval, duration, notifyBefore);
+  });
+  
   console.log('Reminder script loaded successfully!');
   // Initialize settings on load
   loadSettings();
