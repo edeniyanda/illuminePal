@@ -90,43 +90,33 @@
   </div>
 
   <script>
-    try {
-      const timerElement = document.getElementById('timer');
-      const skipButton = document.getElementById('skip');
-      let timeRemaining = 300; // 5 minutes in seconds
+    const timerElement = document.getElementById('timer');
+    const skipButton = document.getElementById('skip');
+    let timeRemaining = 300; // 5 minutes in seconds
 
-      // Function to format time as mm:ss
-      function formatTime(seconds) {
-        const minutes = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-      }
-
-      // Update the timer every second
-      const countdown = setInterval(() => {
-        if (timeRemaining > 0) {
-          timeRemaining--;
-          timerElement.textContent = formatTime(timeRemaining);
-        } else {
-          clearInterval(countdown);
-          timerElement.textContent = 'Time’s up!';
-        }
-      }, 1000);
-
-      // Skip button event listener
-      skipButton.addEventListener('click', () => {
-        clearInterval(countdown);
-        console.log('Skip button clicked.');
-          clearInterval(interval); // Stop timer
-          window.electronAPI.send('long-break-skipped'); // Notify the main process
-          window.close();
-        timerElement.textContent = 'Skipped!';
-      });
-        
-
-    } catch (error) {
-      console.error('Error in countdown script:', error);
+    // Function to format time as mm:ss
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
+
+    // Update the timer every second
+    const countdown = setInterval(() => {
+      if (timeRemaining > 0) {
+        timeRemaining--;
+        timerElement.textContent = formatTime(timeRemaining);
+      } else {
+        clearInterval(countdown);
+        timerElement.textContent = 'Time’s up!';
+      }
+    }, 1000);
+
+    // Skip button event listener
+    skipButton.addEventListener('click', () => {
+      clearInterval(countdown);
+      timerElement.textContent = 'Skipped!';
+    });
   </script>
 </body>
 </html>
