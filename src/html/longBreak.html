@@ -90,7 +90,6 @@
   </div>
 
   <script>
-    try {
       const timerElement = document.getElementById('timer');
       const skipButton = document.getElementById('skip');
       let timeRemaining = 300; // 5 minutes in seconds
@@ -115,18 +114,14 @@
 
       // Skip button event listener
       skipButton.addEventListener('click', () => {
-        clearInterval(countdown);
-        console.log('Skip button clicked.');
-          clearInterval(interval); // Stop timer
-          window.electronAPI.send('long-break-skipped'); // Notify the main process
-          window.close();
         timerElement.textContent = 'Skipped!';
+        console.log('Skip button clicked.');
+        window.close();
+        clearInterval(interval); // Stop timer
       });
         
-
-    } catch (error) {
       console.error('Error in countdown script:', error);
-    }
+
   </script>
 </body>
 </html>
