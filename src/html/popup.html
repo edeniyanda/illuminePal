@@ -86,7 +86,7 @@
 
   <script>
     // Electron API Communication
-    window.electronAPI.receive('update-message', (message) => {
+    window.electronAPI.receive('update-message', (message, duration) => {
       const messageEl = document.getElementById('popupMessage');
       const timerEl = document.getElementById('countdown');
 
@@ -95,7 +95,7 @@
       console.log('Popup received message:', message);
 
       // Countdown Timer
-      let countdown = 7; // 7 seconds
+      let countdown = duration; // Use the duration from the message
       timerEl.innerText = countdown;
 
       // Create the countdown interval
@@ -120,4 +120,3 @@
 </html>
 
 
- 

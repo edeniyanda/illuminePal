@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const intervalInMs = 0.01 * 60 * 1000; // Convert minutes to milliseconds
+    const intervalInMs = interval * 60 * 1000; // Convert minutes to milliseconds
 
     console.log(`Short break reminder scheduled in ${interval} minutes.`);
 
@@ -96,9 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // ========================
   // Long Break Functionality
   function scheduleLongBreak(intervalInMinutes, durationInMinutes, notifyBefore) {
-    const notifyBeforeMs = 0.2 * 60 * 1000; // Notify time in milliseconds
-    const intervalMs = 0.01 * 60 * 1000; // Interval time in milliseconds
-    const durationMs = 0.3 * 60 * 1000; // Duration time in milliseconds
+    const notifyBeforeMs = notifyBefore * 60 * 1000; // Notify time in milliseconds
+    const intervalMs = intervalInMinutes * 60 * 1000; // Interval time in milliseconds
+    const durationMs = durationInMinutes * 60 * 1000; // Duration time in milliseconds
 
     console.log(`Long break scheduled in ${intervalInMinutes} minutes.`);
 
