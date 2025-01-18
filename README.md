@@ -1,6 +1,6 @@
-# IlluminePal
+# illuminePal
 
-IlluminePal is a productivity tool designed to help users take regular breaks and reduce eye strain. Inspired by EyeLeo, IlluminePal encourages users to follow the 20-20-20 rule: every 20 minutes, take a 20-second break and look at something 20 feet away.
+illuminePal is a productivity tool designed to help users take regular breaks and reduce eye strain. Inspired by EyeLeo, IlluminePal encourages users to follow the 20-20-20 rule: every 20 minutes, take a 20-second break and look at something 20 feet away.
 
 ## Features
 
