@@ -120,7 +120,7 @@ ipcMain.on('show-popup', (event, message) => {
       if (popupWindow && !popupWindow.isDestroyed()) {
         popupWindow.hide();
       }
-    }, 7000); // 7 seconds 
+    }, 5000); // 7 seconds 
   }
 });
 
