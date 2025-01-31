@@ -108,7 +108,7 @@ ipcMain.on('show-popup', (event, message) => {
 
   // Ensure popup window is still valid before accessing it
   if (popupWindow && !popupWindow.isDestroyed()) {
-    popupWindow.webContents.send('update-message', message); // Update message
+    popupWindow.webContents.send('update-message', message, 5); // Update message
     popupWindow.show(); // Show popup window
     popupWindow.setBounds({ width: 400, height: 200 }); // Adjust dynamically if needed
 
@@ -120,7 +120,7 @@ ipcMain.on('show-popup', (event, message) => {
       if (popupWindow && !popupWindow.isDestroyed()) {
         popupWindow.hide();
       }
-    }, 5000); // 7 seconds 
+    }, 5000); // 5 seconds 
   }
 });
 
@@ -130,7 +130,7 @@ ipcMain.on('show-preinform', (event, message) => {
   showPreInformPopup();
  
 }); 
- 
+  
 // IPC Event for Long Break
 ipcMain.on('start-long-break', (event, duration) => {
   startLongBreak(duration);

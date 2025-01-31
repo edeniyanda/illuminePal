@@ -75,14 +75,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Timer Countdown Function
   function scheduleShortBreaks(intervalInMinutes) {
     const interval = parseInt(intervalInMinutes);
-
+ 
     // Validate input
     if (isNaN(interval) || interval <= 0) {
       alert('Invalid interval. Please enter a valid time in minutes.');
       return;
     }
 
-    const intervalInMs = interval * 60 * 1000; // Convert minutes to milliseconds
+    const intervalInMs = 0.01 * 60 * 1000; // Convert minutes to milliseconds
 
     console.log(`Short break reminder scheduled in ${interval} minutes.`);
 
