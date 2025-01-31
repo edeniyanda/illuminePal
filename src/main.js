@@ -95,9 +95,9 @@ function startLongBreak(durationInMinutes) {
   longBreakWindow.on('closed', () => (longBreakWindow = null));
 
   // Send duration to long break window
-  longBreakWindow.webContents.once('did-finish-load', () => {
-    longBreakWindow.webContents.send('start-long-break-timer', durationInMinutes);
-  });
+  // longBreakWindow.webContents.once('did-finish-load', () => {
+  // });
+  longBreakWindow.webContents.send('start-long-break-timer', durationInMinutes);
 }
 
 // Handle 'show-popup' Event

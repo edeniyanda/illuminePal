@@ -110,9 +110,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Start the long break
     setTimeout(() => {
-      window.electronAPI.send('start-long-break', durationMs); // Trigger long break window
+      window.electronAPI.send('start-long-break', durationInMinutes); // Trigger long break window
       console.log("Let the break Begins")
-    }, intervalMs); // Actual break time
+    }, 2000); // Actual break time
   }
   
   // ========================

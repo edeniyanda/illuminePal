@@ -81,7 +81,7 @@
   <div class="container">
     <div class="header">
       <img src="../../assets/logo.png" alt="IlluminePal Logo" />
-      <h2>IlluminePal</h2>
+      <h2>illuminePal</h2>
     </div>
     <h1>It's time for a long break.</h1>
     <p>Spend a few minutes taking rest from the display.</p>
@@ -90,9 +90,12 @@
   </div>
 
   <script>
+    window.electronAPI.receive('start-long-break-timer', (durationInMinutes) => {
       const timerElement = document.getElementById('timer');
       const skipButton = document.getElementById('skip');
-      let timeRemaining = 300; // 5 minutes in seconds
+      // durationInMinutes = 6; // Default 6 minutes
+      timerElement.textContent = `${durationInMinutes.toString().padStart(2, '0')}:00`;
+      let timeRemaining = durationInMinutes * 60; // minutes in seconds
 
       // Function to format time as mm:ss
       function formatTime(seconds) {
@@ -121,6 +124,8 @@
       });
         
       console.error('Error in countdown script:', error);
+
+    });
 
   </script>
 </body>
