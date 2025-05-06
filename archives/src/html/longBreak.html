@@ -112,6 +112,9 @@
         } else {
           clearInterval(countdown);
           timerElement.textContent = 'Time’s up!';
+          setInterval(() => {
+            window.close();
+          }, 1000);
         }
       }, 1000);
 
