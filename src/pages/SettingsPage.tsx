@@ -10,11 +10,12 @@ import {
   ShieldCheckIcon,
   MoonIcon,
   SunIcon,
+  ComputerDesktopIcon,
 } from "@heroicons/react/24/outline";
 
 export default function SettingsPage() {
   const { focusMinutes, updateTimerConfig, soundEnabled, setSoundEnabled } = useTimer();
-  const { isDark, toggleTheme } = useTheme();
+  const { themeMode, setThemeMode, isDark } = useTheme();
 
   const [settings, setSettings] = useState<AppSettings>({
     short_break_minutes: focusMinutes,
@@ -142,20 +143,38 @@ export default function SettingsPage() {
               />
             </div>
 
-            <div className="flex items-center justify-between py-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3">
               <div className="flex items-center gap-3">
                 {isDark ? <MoonIcon className="w-4 h-4 text-amber-400" /> : <SunIcon className="w-4 h-4 text-zinc-500" />}
                 <div>
                   <h4 className="font-medium text-zinc-900 dark:text-zinc-100 text-xs">Interface Theme</h4>
-                  <p className="text-[11px] text-zinc-400">Active mode: <span className="capitalize font-medium">{isDark ? "Dark" : "Light"}</span></p>
+                  <p className="text-[11px] text-zinc-400">
+                    Active mode: <span className="capitalize font-medium">{isDark ? "Dark" : "Light"}</span> ({themeMode})
+                  </p>
                 </div>
               </div>
-              <button
-                onClick={toggleTheme}
-                className="px-3 py-1.5 text-xs font-medium rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-              >
-                Toggle Theme
-              </button>
+
+              {/* HIG/Fluent Segmented Picker */}
+              <div className="inline-flex items-center bg-zinc-100 dark:bg-zinc-800/80 p-0.5 rounded-xl border border-zinc-200/60 dark:border-zinc-700/60 text-xs">
+                <OptionButton
+                  active={themeMode === "light"}
+                  onClick={() => setThemeMode("light")}
+                  label="Light"
+                  icon={SunIcon}
+                />
+                <OptionButton
+                  active={themeMode === "dark"}
+                  onClick={() => setThemeMode("dark")}
+                  label="Dark"
+                  icon={MoonIcon}
+                />
+                <OptionButton
+                  active={themeMode === "system"}
+                  onClick={() => setThemeMode("system")}
+                  label="System"
+                  icon={ComputerDesktopIcon}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -180,5 +199,31 @@ export default function SettingsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function OptionButton({
+  active,
+  onClick,
+  label,
+  icon: Icon,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+  icon: React.ElementType;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+        active
+          ? "bg-white dark:bg-zinc-900 text-sky-600 dark:text-sky-400 font-semibold shadow-xs"
+          : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
+      }`}
+    >
+      <Icon className="w-3.5 h-3.5" />
+      <span>{label}</span>
+    </button>
   );
 }

@@ -1,5 +1,29 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Desktop Native Application Base Setup */
+:root {
+  color-scheme: light dark;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+input, textarea {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
 @layer utilities {
   @keyframes spinSlow {
     from {
@@ -48,10 +72,10 @@
   }
 }
 
-/* Custom scrollbar for HIG/Fluent feel */
+/* Native HIG & Fluent Desktop Scrollbar Styling */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -59,10 +83,32 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(160, 160, 160, 0.25);
+  background: rgba(0, 0, 0, 0.16);
   border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(160, 160, 160, 0.4);
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Desktop Button Press Effect */
+button:active:not(:disabled) {
+  transform: scale(0.98);
+  transition: transform 0.08s ease;
 }

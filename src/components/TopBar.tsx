@@ -3,6 +3,7 @@ import { useTimer } from "../context/TimerContext";
 import {
   SunIcon,
   MoonIcon,
+  ComputerDesktopIcon,
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
   PlayIcon,
@@ -24,7 +25,7 @@ const tabTitles: Record<TabType, string> = {
 };
 
 export default function TopBar({ activeTab }: TopBarProps) {
-  const { isDark, toggleTheme } = useTheme();
+  const { themeMode, setThemeMode } = useTheme();
   const {
     timeRemaining,
     timerStatus,
@@ -39,9 +40,9 @@ export default function TopBar({ activeTab }: TopBarProps) {
   const formattedTime = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 
   return (
-    <header className="px-6 py-3.5 bg-zinc-50/70 dark:bg-zinc-950/70 border-b border-zinc-200/50 dark:border-zinc-800/50 backdrop-blur-xl sticky top-0 z-10 flex items-center justify-between transition-colors select-none">
+    <header className="px-6 py-3 bg-zinc-50/80 dark:bg-zinc-950/80 border-b border-zinc-200/60 dark:border-zinc-800/60 backdrop-blur-xl sticky top-0 z-10 flex items-center justify-between transition-colors select-none">
       <div>
-        <h1 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight">
+        <h1 className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight">
           {tabTitles[activeTab]}
         </h1>
       </div>
@@ -85,19 +86,54 @@ export default function TopBar({ activeTab }: TopBarProps) {
           )}
         </button>
 
-        {/* Theme Toggle */}
-        <button
-          onClick={toggleTheme}
-          className="p-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-900/60 transition-colors"
-          title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-        >
-          {isDark ? (
-            <SunIcon className="w-4 h-4 text-amber-400" />
-          ) : (
-            <MoonIcon className="w-4 h-4 text-zinc-600" />
-          )}
-        </button>
+        {/* Native Segmented Theme Control */}
+        <div className="flex items-center bg-zinc-200/60 dark:bg-zinc-900/80 p-0.5 rounded-lg border border-zinc-200/60 dark:border-zinc-800/60">
+          <ThemeSegmentButton
+            active={themeMode === "light"}
+            onClick={() => setThemeMode("light")}
+            title="Light Theme"
+            icon={SunIcon}
+          />
+          <ThemeSegmentButton
+            active={themeMode === "dark"}
+            onClick={() => setThemeMode("dark")}
+            title="Dark Theme"
+            icon={MoonIcon}
+          />
+          <ThemeSegmentButton
+            active={themeMode === "system"}
+            onClick={() => setThemeMode("system")}
+            title="System Default Theme"
+            icon={ComputerDesktopIcon}
+          />
+        </div>
       </div>
     </header>
+  );
+}
+
+function ThemeSegmentButton({
+  active,
+  onClick,
+  title,
+  icon: Icon,
+}: {
+  active: boolean;
+  onClick: () => void;
+  title: string;
+  icon: React.ElementType;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      title={title}
+      className={`p-1 rounded-md transition-all ${
+        active
+          ? "bg-white dark:bg-zinc-800 text-sky-600 dark:text-sky-400 shadow-xs font-semibold"
+          : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
+      }`}
+    >
+      <Icon className="w-3.5 h-3.5" />
+    </button>
   );
 }

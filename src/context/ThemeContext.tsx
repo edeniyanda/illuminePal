@@ -1,28 +1,81 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
-const ThemeContext = createContext({
+export type ThemeMode = "light" | "dark" | "system";
+
+interface ThemeContextType {
+  themeMode: ThemeMode;
+  setThemeMode: (mode: ThemeMode) => void;
+  isDark: boolean;
+  toggleTheme: () => void;
+}
+
+const ThemeContext = createContext<ThemeContextType>({
+  themeMode: "system",
+  setThemeMode: () => {},
   isDark: false,
   toggleTheme: () => {},
 });
 
-export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isDark, setIsDark] = useState(() =>
-    localStorage.getItem("theme") === "dark"
-  );
+export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [themeMode, setThemeModeState] = useState<ThemeMode>(() => {
+    const saved = localStorage.getItem("illumine_theme_mode") as ThemeMode | null;
+    return saved && ["light", "dark", "system"].includes(saved) ? saved : "system";
+  });
+
+  const [systemIsDark, setSystemIsDark] = useState<boolean>(() => {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+
+  // Listen to OS system color scheme changes
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = (e: MediaQueryListEvent) => {
+      setSystemIsDark(e.matches);
+    };
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", handleChange);
+    } else {
+      mediaQuery.addListener(handleChange);
+    }
+
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener("change", handleChange);
+      } else {
+        mediaQuery.removeListener(handleChange);
+      }
+    };
+  }, []);
+
+  const isDark = themeMode === "system" ? systemIsDark : themeMode === "dark";
 
   useEffect(() => {
     const root = document.documentElement;
     if (isDark) {
       root.classList.add("dark");
-      localStorage.setItem("theme", "dark");
+      root.style.colorScheme = "dark";
     } else {
       root.classList.remove("dark");
-      localStorage.setItem("theme", "light");
+      root.style.colorScheme = "light";
     }
   }, [isDark]);
 
+  const setThemeMode = (mode: ThemeMode) => {
+    setThemeModeState(mode);
+    localStorage.setItem("illumine_theme_mode", mode);
+  };
+
+  const toggleTheme = () => {
+    if (isDark) {
+      setThemeMode("light");
+    } else {
+      setThemeMode("dark");
+    }
+  };
+
   return (
-    <ThemeContext.Provider value={{ isDark, toggleTheme: () => setIsDark(!isDark) }}>
+    <ThemeContext.Provider value={{ themeMode, setThemeMode, isDark, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );
