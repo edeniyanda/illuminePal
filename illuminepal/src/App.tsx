@@ -1,22 +1,46 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/tauri";
-import SettingsForm from "./components/SettingsForm";
-import "./App.css"; 
-import Sidebar from "./components/Sidebar";
+import Sidebar, { TabType } from "./components/Sidebar";
 import TopBar from "./components/TopBar";
 import Dashboard from "./pages/Dashboard";
+import RemindersPage from "./pages/RemindersPage";
+import ExercisesPage from "./pages/ExercisesPage";
+import AnalyticsPage from "./pages/AnalyticsPage";
+import SettingsPage from "./pages/SettingsPage";
+import BreakOverlay from "./components/BreakOverlay";
+import { TimerProvider } from "./context/TimerContext";
+import "./App.css";
 
-function App() {
+function AppContent() {
+  const [activeTab, setActiveTab] = useState<TabType>("home");
+
   return (
-    <div className="flex bg-slate-100 dark:bg-slate-900 min-h-screen">
-      <Sidebar />
-      <div className="flex-1 flex flex-col">
-        <TopBar />
-        <Dashboard />
+    <div className="flex bg-slate-100 dark:bg-slate-950 min-h-screen text-slate-900 dark:text-slate-100 font-sans selection:bg-blue-500 selection:text-white transition-colors duration-300">
+      {/* Interactive Sidebar */}
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+
+      {/* Main Main App Container */}
+      <div className="flex-1 flex flex-col min-h-screen overflow-y-auto">
+        <TopBar activeTab={activeTab} />
+
+        <main className="flex-1 pb-12">
+          {activeTab === "home" && <Dashboard onNavigate={setActiveTab} />}
+          {activeTab === "reminders" && <RemindersPage />}
+          {activeTab === "exercises" && <ExercisesPage />}
+          {activeTab === "analytics" && <AnalyticsPage />}
+          {activeTab === "settings" && <SettingsPage />}
+        </main>
       </div>
+
+      {/* Fullscreen Break Shield Modal Overlay */}
+      <BreakOverlay />
     </div>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <TimerProvider>
+      <AppContent />
+    </TimerProvider>
+  );
+}
