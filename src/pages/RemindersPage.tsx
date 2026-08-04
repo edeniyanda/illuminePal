@@ -47,7 +47,7 @@ export default function RemindersPage() {
               onClick={() => updateTimerConfig(preset.focus, preset.rest)}
               className={`p-4 rounded-xl cursor-pointer border transition-all ${
                 isSelected
-                  ? "bg-sky-500/10 border-sky-500/50 text-zinc-900 dark:text-zinc-100"
+                  ? "bg-sky-500/10 border-sky-500/50 text-zinc-900 dark:text-zinc-100 shadow-xs"
                   : "bg-white dark:bg-zinc-900/80 border-zinc-200/60 dark:border-zinc-800/60 text-zinc-800 dark:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700"
               }`}
             >
@@ -55,8 +55,8 @@ export default function RemindersPage() {
                 <span className="text-[11px] font-semibold text-sky-600 dark:text-sky-400">{preset.title}</span>
                 {isSelected && <SparklesIcon className="w-4 h-4 text-sky-500" />}
               </div>
-              <p className="text-[11px] text-zinc-400 mb-3">{preset.desc}</p>
-              <div className="font-mono text-xs text-zinc-500 dark:text-zinc-400">
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mb-3">{preset.desc}</p>
+              <div className="font-mono text-xs text-zinc-600 dark:text-zinc-400 font-medium">
                 {preset.focus}m work / {preset.rest >= 60 ? `${preset.rest / 60}m` : `${preset.rest}s`} break
               </div>
             </div>
@@ -72,7 +72,7 @@ export default function RemindersPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label className="text-[11px] font-medium text-zinc-400 block">Focus Duration (Minutes)</label>
+            <label className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 block">Focus Duration (Minutes)</label>
             <input
               type="number"
               min="1"
@@ -84,7 +84,7 @@ export default function RemindersPage() {
           </div>
 
           <div className="space-y-1">
-            <label className="text-[11px] font-medium text-zinc-400 block">Rest Duration (Seconds)</label>
+            <label className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 block">Rest Duration (Seconds)</label>
             <input
               type="number"
               min="5"
@@ -97,13 +97,13 @@ export default function RemindersPage() {
         </div>
 
         {/* Toggles */}
-        <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800/60 space-y-3">
-          <div className="flex items-center justify-between p-3 bg-zinc-50/50 dark:bg-zinc-800/30 rounded-xl">
+        <div className="pt-4 border-t border-zinc-200/60 dark:border-zinc-800/60 space-y-3">
+          <div className="flex items-center justify-between p-3 bg-zinc-50 dark:bg-zinc-800/30 rounded-xl border border-zinc-200/40 dark:border-zinc-800/40">
             <div className="flex items-center gap-3">
               <ShieldCheckIcon className="w-4 h-4 text-indigo-500" />
               <div>
                 <h4 className="font-medium text-zinc-900 dark:text-zinc-100 text-xs">Strict Mode</h4>
-                <p className="text-[11px] text-zinc-400">Disables skipping during break overlay</p>
+                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Disables skipping during break overlay</p>
               </div>
             </div>
             <input
@@ -114,12 +114,12 @@ export default function RemindersPage() {
             />
           </div>
 
-          <div className="flex items-center justify-between p-3 bg-zinc-50/50 dark:bg-zinc-800/30 rounded-xl">
+          <div className="flex items-center justify-between p-3 bg-zinc-50 dark:bg-zinc-800/30 rounded-xl border border-zinc-200/40 dark:border-zinc-800/40">
             <div className="flex items-center gap-3">
               <SpeakerWaveIcon className="w-4 h-4 text-sky-500" />
               <div>
                 <h4 className="font-medium text-zinc-900 dark:text-zinc-100 text-xs">Sound Alerts</h4>
-                <p className="text-[11px] text-zinc-400">Audio chimes on break start and end</p>
+                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Audio chimes on break start and end</p>
               </div>
             </div>
             <input

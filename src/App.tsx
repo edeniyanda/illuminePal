@@ -14,15 +14,16 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState<TabType>("home");
 
   return (
-    <div className="flex bg-zinc-50 dark:bg-zinc-950 min-h-screen text-zinc-900 dark:text-zinc-100 font-sans selection:bg-sky-500 selection:text-white transition-colors duration-300">
+    <div className="flex h-screen w-screen overflow-hidden bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans selection:bg-sky-500 selection:text-white transition-colors duration-300">
       {/* Interactive Sidebar */}
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {/* Main Main App Container */}
-      <div className="flex-1 flex flex-col min-h-screen overflow-y-auto">
+      {/* Main Container Shell */}
+      <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
         <TopBar activeTab={activeTab} />
 
-        <main className="flex-1 pb-12">
+        {/* Dedicated Main Scrollable Viewport */}
+        <main className="flex-1 overflow-y-auto pb-12">
           {activeTab === "home" && <Dashboard onNavigate={setActiveTab} />}
           {activeTab === "reminders" && <RemindersPage />}
           {activeTab === "exercises" && <ExercisesPage />}

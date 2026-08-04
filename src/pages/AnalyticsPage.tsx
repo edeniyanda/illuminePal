@@ -74,17 +74,17 @@ export default function AnalyticsPage() {
             <h3 className="font-semibold text-xs text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
               Weekly Activity
             </h3>
-            <p className="text-[11px] text-zinc-400">Breaks completed per day</p>
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Breaks completed per day</p>
           </div>
         </div>
 
         {/* Minimal Bar Chart */}
-        <div className="h-44 flex items-end justify-between gap-3 pt-6 px-2 border-b border-zinc-100 dark:border-zinc-800/60">
+        <div className="h-44 flex items-end justify-between gap-3 pt-6 px-2 border-b border-zinc-200/60 dark:border-zinc-800/60">
           {weeklyData.map((item) => {
             const heightPercent = Math.min(100, (item.breaks / maxBreaks) * 100);
             return (
               <div key={item.day} className="flex-1 flex flex-col items-center gap-1.5 group">
-                <span className="text-[10px] font-mono font-medium text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="text-[10px] font-mono font-medium text-zinc-500 dark:text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity">
                   {item.breaks}
                 </span>
                 <div className="w-full bg-zinc-100 dark:bg-zinc-800/60 rounded-t-lg h-32 flex items-end overflow-hidden">
@@ -93,7 +93,7 @@ export default function AnalyticsPage() {
                     className="w-full bg-sky-500 rounded-t-lg transition-all duration-500 group-hover:bg-sky-400"
                   ></div>
                 </div>
-                <span className="text-[11px] font-medium text-zinc-400">{item.day}</span>
+                <span className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400">{item.day}</span>
               </div>
             );
           })}
@@ -102,24 +102,24 @@ export default function AnalyticsPage() {
 
       {/* Ergonomic Tips */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-zinc-900 text-white rounded-2xl p-5 border border-zinc-800 space-y-2">
-          <div className="flex items-center gap-1.5 text-sky-400 text-[11px] font-semibold uppercase tracking-wider">
+        <div className="bg-white dark:bg-zinc-900/80 text-zinc-900 dark:text-zinc-100 rounded-2xl p-5 border border-zinc-200/60 dark:border-zinc-800/60 shadow-xs space-y-2">
+          <div className="flex items-center gap-1.5 text-sky-600 dark:text-sky-400 text-[11px] font-semibold uppercase tracking-wider">
             <ClockIcon className="w-3.5 h-3.5" />
             <span>Ergonomics</span>
           </div>
           <h4 className="font-semibold text-sm">Monitor Position</h4>
-          <p className="text-xs text-zinc-400 leading-relaxed">
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
             Keep your display 20 to 24 inches from your eyes with the top of the monitor aligned near eye level.
           </p>
         </div>
 
-        <div className="bg-zinc-900 text-white rounded-2xl p-5 border border-zinc-800 space-y-2">
-          <div className="flex items-center gap-1.5 text-sky-400 text-[11px] font-semibold uppercase tracking-wider">
+        <div className="bg-white dark:bg-zinc-900/80 text-zinc-900 dark:text-zinc-100 rounded-2xl p-5 border border-zinc-200/60 dark:border-zinc-800/60 shadow-xs space-y-2">
+          <div className="flex items-center gap-1.5 text-sky-600 dark:text-sky-400 text-[11px] font-semibold uppercase tracking-wider">
             <SparklesIcon className="w-3.5 h-3.5" />
             <span>Lighting</span>
           </div>
           <h4 className="font-semibold text-sm">Ambient Contrast</h4>
-          <p className="text-xs text-zinc-400 leading-relaxed">
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
             Ensure room lighting matches screen brightness to reduce ciliary muscle fatigue during prolonged sessions.
           </p>
         </div>
@@ -144,12 +144,12 @@ function StatTile({
   return (
     <div className="bg-white dark:bg-zinc-900/80 border border-zinc-200/60 dark:border-zinc-800/60 p-4 rounded-2xl shadow-xs flex flex-col justify-between space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-medium text-zinc-400">{label}</span>
+        <span className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400">{label}</span>
         <Icon className={`w-4 h-4 ${color}`} />
       </div>
       <div>
         <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight font-mono">{value}</span>
-        <span className="block text-[10px] text-zinc-400 mt-0.5">{subtext}</span>
+        <span className="block text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">{subtext}</span>
       </div>
     </div>
   );

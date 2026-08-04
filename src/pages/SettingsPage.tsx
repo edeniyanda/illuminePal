@@ -75,7 +75,7 @@ export default function SettingsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-[11px] font-medium text-zinc-400 block">Short Break Interval (Minutes)</label>
+              <label className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 block">Short Break Interval (Minutes)</label>
               <input
                 type="number"
                 min="1"
@@ -89,7 +89,7 @@ export default function SettingsPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-[11px] font-medium text-zinc-400 block">Long Break Interval (Minutes)</label>
+              <label className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 block">Long Break Interval (Minutes)</label>
               <input
                 type="number"
                 min="1"
@@ -105,18 +105,18 @@ export default function SettingsPage() {
         </div>
 
         {/* Section: Preferences List */}
-        <div className="space-y-3 pt-4 border-t border-zinc-100 dark:border-zinc-800/60">
+        <div className="space-y-3 pt-4 border-t border-zinc-200/60 dark:border-zinc-800/60">
           <h3 className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
             Preferences
           </h3>
 
-          <div className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
+          <div className="divide-y divide-zinc-200/60 dark:divide-zinc-800/60">
             <div className="flex items-center justify-between py-3">
               <div className="flex items-center gap-3">
                 <ShieldCheckIcon className="w-4 h-4 text-sky-500" />
                 <div>
                   <h4 className="font-medium text-zinc-900 dark:text-zinc-100 text-xs">Desktop Notifications</h4>
-                  <p className="text-[11px] text-zinc-400">Trigger OS native notification prompts</p>
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Trigger OS native notification prompts</p>
                 </div>
               </div>
               <input
@@ -132,7 +132,7 @@ export default function SettingsPage() {
                 <SpeakerWaveIcon className="w-4 h-4 text-indigo-500" />
                 <div>
                   <h4 className="font-medium text-zinc-900 dark:text-zinc-100 text-xs">Sound Chimes</h4>
-                  <p className="text-[11px] text-zinc-400">Play audio tones on break start and end</p>
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Play audio tones on break start and end</p>
                 </div>
               </div>
               <input
@@ -148,8 +148,8 @@ export default function SettingsPage() {
                 {isDark ? <MoonIcon className="w-4 h-4 text-amber-400" /> : <SunIcon className="w-4 h-4 text-zinc-500" />}
                 <div>
                   <h4 className="font-medium text-zinc-900 dark:text-zinc-100 text-xs">Interface Theme</h4>
-                  <p className="text-[11px] text-zinc-400">
-                    Active mode: <span className="capitalize font-medium">{isDark ? "Dark" : "Light"}</span> ({themeMode})
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                    Active mode: <span className="capitalize font-medium text-zinc-800 dark:text-zinc-200">{isDark ? "Dark" : "Light"}</span> ({themeMode})
                   </p>
                 </div>
               </div>
@@ -180,13 +180,13 @@ export default function SettingsPage() {
         </div>
 
         {/* Save Action */}
-        <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800/60 flex items-center justify-between">
+        <div className="pt-4 border-t border-zinc-200/60 dark:border-zinc-800/60 flex items-center justify-between">
           {savedSuccess ? (
             <span className="text-xs font-medium text-emerald-500 flex items-center gap-1">
               <CheckIcon className="w-4 h-4" /> Settings saved successfully
             </span>
           ) : (
-            <span className="text-[11px] text-zinc-400">Persisted locally and synced with Rust backend.</span>
+            <span className="text-[11px] text-zinc-500 dark:text-zinc-400">Persisted locally and synced with Rust backend.</span>
           )}
 
           <button
