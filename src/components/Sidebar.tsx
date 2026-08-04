@@ -1,10 +1,9 @@
-import React from "react";
 import {
-  HomeIcon,
+  Square2StackIcon,
   ClockIcon,
   EyeIcon,
   ChartBarIcon,
-  Cog6ToothIcon,
+  AdjustmentsHorizontalIcon,
 } from "@heroicons/react/24/outline";
 
 export type TabType = "home" | "reminders" | "exercises" | "analytics" | "settings";
@@ -15,46 +14,57 @@ interface SidebarProps {
 }
 
 const navItems: { id: TabType; label: string; icon: React.ElementType }[] = [
-  { id: "home", label: "Dashboard", icon: HomeIcon },
-  { id: "reminders", label: "Reminders", icon: ClockIcon },
-  { id: "exercises", label: "Eye Exercises", icon: EyeIcon },
+  { id: "home", label: "Dashboard", icon: Square2StackIcon },
+  { id: "reminders", label: "Schedules", icon: ClockIcon },
+  { id: "exercises", label: "Exercises", icon: EyeIcon },
   { id: "analytics", label: "Analytics", icon: ChartBarIcon },
-  { id: "settings", label: "Settings", icon: Cog6ToothIcon },
+  { id: "settings", label: "Settings", icon: AdjustmentsHorizontalIcon },
 ];
 
 export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
   return (
-    <aside className="w-20 bg-white/80 dark:bg-slate-900/90 border-r border-slate-200 dark:border-slate-800 flex flex-col items-center py-6 shadow-sm backdrop-blur-md transition-all z-20">
-      {/* App Logo Icon */}
-      <div className="mb-8 flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white shadow-md shadow-blue-500/30">
-        <EyeIcon className="w-7 h-7" />
+    <aside className="w-18 md:w-60 bg-zinc-50/80 dark:bg-zinc-950/80 border-r border-zinc-200/60 dark:border-zinc-800/60 flex flex-col justify-between p-3.5 backdrop-blur-xl transition-all z-20 select-none">
+      <div>
+        {/* Brand Header */}
+        <div className="flex items-center gap-3 px-3 py-3 mb-4">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-500 text-white flex items-center justify-center shadow-sm">
+            <EyeIcon className="w-4 h-4" />
+          </div>
+          <div className="hidden md:block">
+            <span className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+              IlluminePal
+            </span>
+            <span className="block text-[10px] text-zinc-400 font-medium">Eye Care & Rest</span>
+          </div>
+        </div>
+
+        {/* Navigation Item List */}
+        <nav className="space-y-1">
+          {navItems.map(({ id, label, icon: Icon }) => {
+            const isActive = activeTab === id;
+            return (
+              <button
+                key={id}
+                onClick={() => setActiveTab(id)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all duration-150 ${
+                  isActive
+                    ? "bg-zinc-200/80 dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 font-semibold shadow-xs"
+                    : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900/60 hover:text-zinc-800 dark:hover:text-zinc-200"
+                }`}
+                title={label}
+              >
+                <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-sky-500" : ""}`} />
+                <span className="hidden md:inline truncate">{label}</span>
+              </button>
+            );
+          })}
+        </nav>
       </div>
 
-      {/* Navigation Buttons */}
-      <nav className="flex flex-col space-y-4 w-full px-3">
-        {navItems.map(({ id, label, icon: Icon }) => {
-          const isActive = activeTab === id;
-          return (
-            <button
-              key={id}
-              onClick={() => setActiveTab(id)}
-              title={label}
-              className={`relative flex items-center justify-center w-full h-12 rounded-2xl transition-all duration-200 group ${
-                isActive
-                  ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
-                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-blue-600 dark:hover:text-blue-400"
-              }`}
-            >
-              <Icon className="w-6 h-6 transition-transform duration-200 group-hover:scale-110" />
-
-              {/* Tooltip on Hover */}
-              <span className="absolute left-full ml-3 px-3 py-1.5 bg-slate-900 text-white text-xs font-medium rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl z-50">
-                {label}
-              </span>
-            </button>
-          );
-        })}
-      </nav>
+      {/* Footer minimal info */}
+      <div className="hidden md:block px-3 py-2 border-t border-zinc-200/40 dark:border-zinc-800/40">
+        <span className="text-[10px] text-zinc-400 font-medium block">Version 1.0.0</span>
+      </div>
     </aside>
   );
 }

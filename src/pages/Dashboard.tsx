@@ -1,4 +1,3 @@
-import React from "react";
 import { useTimer } from "../context/TimerContext";
 import {
   FireIcon,
@@ -9,7 +8,7 @@ import {
   ClockIcon,
   EyeIcon,
   ChartBarIcon,
-  CheckCircleIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 
 interface DashboardProps {
@@ -36,109 +35,94 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
   const formattedTime = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 
   return (
-    <div className="p-8 w-full max-w-7xl mx-auto space-y-8 animate-fade-in">
-      {/* Hero Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-3xl p-8 shadow-xl shadow-blue-500/15">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-white text-xs font-semibold backdrop-blur-md">
-              <FireIcon className="w-4 h-4 text-amber-300 animate-bounce" />
-              <span>{streakDays} Day Eye Care Streak</span>
-            </div>
-            <h2 className="text-3xl font-extrabold tracking-tight">Keep Your Eyes Fresh & Sharp!</h2>
-            <p className="text-blue-100 text-sm max-w-xl leading-relaxed">
-              Follow the <span className="font-bold underline decoration-amber-300">20-20-20 rule</span>: Every 20 minutes, look at an object 20 feet away for 20 seconds.
-            </p>
+    <div className="p-6 md:p-8 max-w-5xl mx-auto space-y-6">
+      {/* Soft Hero Summary Card */}
+      <div className="bg-gradient-to-br from-sky-500/10 via-indigo-500/5 to-transparent border border-sky-500/15 dark:border-sky-400/10 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 text-[11px] font-medium">
+            <FireIcon className="w-3.5 h-3.5 text-amber-500" />
+            <span>{streakDays} Day Streak</span>
           </div>
-
-          {/* Quick Metrics */}
-          <div className="flex gap-4">
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 px-5 py-4 rounded-2xl text-center min-w-[110px]">
-              <span className="text-3xl font-black">{totalBreaksToday}</span>
-              <span className="block text-xs text-blue-100 mt-1">Breaks Today</span>
-            </div>
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 px-5 py-4 rounded-2xl text-center min-w-[110px]">
-              <span className="text-3xl font-black">{streakDays}</span>
-              <span className="block text-xs text-blue-100 mt-1">Days Streak</span>
-            </div>
-          </div>
+          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight">
+            Protect your vision with the 20-20-20 rule
+          </h2>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-lg">
+            Every 20 minutes, focus on an object 20 feet away for 20 seconds to ease eye strain.
+          </p>
         </div>
 
-        {/* Decorative Ambient Shapes */}
-        <div className="absolute -bottom-12 -right-12 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="flex gap-3 shrink-0">
+          <div className="bg-white/60 dark:bg-zinc-900/60 border border-zinc-200/50 dark:border-zinc-800/50 px-4 py-3 rounded-xl text-center min-w-[90px]">
+            <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{totalBreaksToday}</span>
+            <span className="block text-[10px] text-zinc-400 font-medium">Breaks Today</span>
+          </div>
+          <div className="bg-white/60 dark:bg-zinc-900/60 border border-zinc-200/50 dark:border-zinc-800/50 px-4 py-3 rounded-xl text-center min-w-[90px]">
+            <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{streakDays}</span>
+            <span className="block text-[10px] text-zinc-400 font-medium">Days Active</span>
+          </div>
+        </div>
       </div>
 
-      {/* Main Focus & Timer Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column: Big Interactive Timer Ring */}
-        <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-sm flex flex-col items-center justify-center text-center relative overflow-hidden">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 mb-6">
-            <ClockIcon className="w-4 h-4 text-blue-500" />
-            <span>20-20-20 Session Timer</span>
+      {/* Main Focus Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Timer Card */}
+        <div className="lg:col-span-2 bg-white dark:bg-zinc-900/80 border border-zinc-200/60 dark:border-zinc-800/60 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-xs">
+          <div className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-400 mb-4">
+            <ClockIcon className="w-3.5 h-3.5 text-sky-500" />
+            <span>Focus Session</span>
           </div>
 
-          {/* Progress Ring */}
-          <div className="relative w-64 h-64 flex items-center justify-center my-4">
+          {/* Thin Minimalist SVG Ring */}
+          <div className="relative w-52 h-52 flex items-center justify-center my-2">
             <svg className="w-full h-full transform -rotate-90">
               <circle
-                cx="128"
-                cy="128"
-                r="105"
+                cx="104"
+                cy="104"
+                r="86"
                 stroke="currentColor"
-                strokeWidth="12"
-                className="text-slate-100 dark:text-slate-800"
+                strokeWidth="6"
+                className="text-zinc-100 dark:text-zinc-800/80"
                 fill="transparent"
               />
               <circle
-                cx="128"
-                cy="128"
-                r="105"
-                stroke="url(#timer-grad)"
-                strokeWidth="12"
-                strokeDasharray={660}
-                strokeDashoffset={660 - (660 * progressPercent) / 100}
+                cx="104"
+                cy="104"
+                r="86"
+                stroke="currentColor"
+                strokeWidth="6"
+                strokeDasharray={540}
+                strokeDashoffset={540 - (540 * progressPercent) / 100}
                 strokeLinecap="round"
                 fill="transparent"
-                className="transition-all duration-1000 ease-linear"
+                className="text-sky-500 transition-all duration-1000 ease-linear"
               />
-              <defs>
-                <linearGradient id="timer-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#2563eb" />
-                  <stop offset="100%" stopColor="#7c3aed" />
-                </linearGradient>
-              </defs>
             </svg>
 
-            {/* Timer Center text */}
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-5xl font-black tracking-tight text-slate-800 dark:text-white font-mono">
+              <span className="text-4xl font-extrabold text-zinc-900 dark:text-zinc-100 font-mono tracking-tight">
                 {formattedTime}
               </span>
-              <span className="text-xs font-semibold text-slate-400 capitalize mt-2 flex items-center gap-1.5">
-                <span className={`w-2 h-2 rounded-full ${timerStatus === "running" ? "bg-emerald-500 animate-ping" : "bg-amber-500"}`}></span>
-                Status: {timerStatus}
+              <span className="text-[11px] text-zinc-400 font-medium capitalize mt-1 flex items-center gap-1.5">
+                <span className={`w-1.5 h-1.5 rounded-full ${timerStatus === "running" ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`}></span>
+                {timerStatus}
               </span>
             </div>
           </div>
 
-          {/* Timer Controls */}
-          <div className="flex items-center gap-4 mt-6">
+          {/* Quiet Controls */}
+          <div className="flex items-center gap-3 mt-4">
             <button
               onClick={toggleTimer}
-              className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-white font-semibold shadow-lg transition-all transform active:scale-95 ${
-                timerStatus === "running"
-                  ? "bg-amber-500 hover:bg-amber-600 shadow-amber-500/25"
-                  : "bg-blue-600 hover:bg-blue-500 shadow-blue-600/25"
-              }`}
+              className="flex items-center gap-1.5 bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 font-medium px-4 py-2 rounded-xl text-xs transition-colors shadow-xs"
             >
               {timerStatus === "running" ? (
                 <>
-                  <PauseIcon className="w-5 h-5" />
-                  <span>Pause Focus</span>
+                  <PauseIcon className="w-3.5 h-3.5" />
+                  <span>Pause</span>
                 </>
               ) : (
                 <>
-                  <PlayIcon className="w-5 h-5" />
+                  <PlayIcon className="w-3.5 h-3.5" />
                   <span>Start Focus</span>
                 </>
               )}
@@ -146,48 +130,42 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
 
             <button
               onClick={resetTimer}
-              className="p-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700/80 rounded-2xl transition-all"
+              className="p-2 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 bg-zinc-100 dark:bg-zinc-800 rounded-xl transition-colors"
               title="Reset Timer"
             >
-              <ArrowPathIcon className="w-5 h-5" />
+              <ArrowPathIcon className="w-4 h-4" />
             </button>
 
             <button
               onClick={triggerBreakNow}
-              className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold px-5 py-3 rounded-2xl shadow-lg shadow-indigo-500/25 transition-all transform active:scale-95"
+              className="flex items-center gap-1.5 bg-sky-500/10 hover:bg-sky-500/20 text-sky-600 dark:text-sky-400 font-medium px-4 py-2 rounded-xl text-xs transition-colors"
             >
-              <SparklesIcon className="w-5 h-5" />
-              <span>Take Break Now</span>
+              <SparklesIcon className="w-3.5 h-3.5" />
+              <span>Rest Now</span>
             </button>
           </div>
         </div>
 
-        {/* Right Column: Quick Feature Cards */}
-        <div className="space-y-6 flex flex-col justify-between">
-          <FeatureCard
+        {/* Feature Tiles */}
+        <div className="space-y-4 flex flex-col justify-between">
+          <MinimalTile
             title="Break Schedules"
-            subtitle="Custom timers & strict break enforcement"
+            subtitle="Custom timers & rules"
             icon={ClockIcon}
-            badge="Configurable"
-            buttonText="Configure"
             onClick={() => onNavigate("reminders")}
           />
 
-          <FeatureCard
+          <MinimalTile
             title="Guided Exercises"
-            subtitle="5 interactive visual eye exercises"
+            subtitle="Visual eye relaxation"
             icon={EyeIcon}
-            badge="Interactive"
-            buttonText="Start Workout"
             onClick={() => onNavigate("exercises")}
           />
 
-          <FeatureCard
+          <MinimalTile
             title="Care Analytics"
-            subtitle="View screen time & completion logs"
+            subtitle="View rest metrics"
             icon={ChartBarIcon}
-            badge="Stats"
-            buttonText="View Reports"
             onClick={() => onNavigate("analytics")}
           />
         </div>
@@ -196,45 +174,33 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
   );
 }
 
-function FeatureCard({
+function MinimalTile({
   title,
   subtitle,
   icon: Icon,
-  badge,
-  buttonText,
   onClick,
 }: {
   title: string;
   subtitle: string;
   icon: React.ElementType;
-  badge: string;
-  buttonText: string;
   onClick: () => void;
 }) {
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
-      <div className="flex items-start justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-3 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400">
-            <Icon className="w-6 h-6" />
-          </div>
-          <div>
-            <h3 className="font-bold text-slate-800 dark:text-white text-base">{title}</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">{subtitle}</p>
-          </div>
+    <div
+      onClick={onClick}
+      className="bg-white dark:bg-zinc-900/80 border border-zinc-200/60 dark:border-zinc-800/60 p-4 rounded-2xl cursor-pointer hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex items-center justify-between group shadow-xs"
+    >
+      <div className="flex items-center gap-3">
+        <div className="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
+          <Icon className="w-4 h-4" />
         </div>
-        <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-          {badge}
-        </span>
+        <div>
+          <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 text-xs">{title}</h3>
+          <p className="text-[11px] text-zinc-400">{subtitle}</p>
+        </div>
       </div>
 
-      <button
-        onClick={onClick}
-        className="w-full bg-slate-100 dark:bg-slate-800 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white text-slate-700 dark:text-slate-200 text-xs font-bold py-3 px-4 rounded-2xl transition-all flex items-center justify-center gap-2 group"
-      >
-        <span>{buttonText}</span>
-        <CheckCircleIcon className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-      </button>
+      <ChevronRightIcon className="w-4 h-4 text-zinc-400 group-hover:translate-x-0.5 transition-transform" />
     </div>
   );
 }

@@ -8,7 +8,7 @@ import {
   PlayIcon,
   PauseIcon,
   SparklesIcon,
-} from "@heroicons/react/24/solid";
+} from "@heroicons/react/24/outline";
 import type { TabType } from "./Sidebar";
 
 interface TopBarProps {
@@ -16,11 +16,11 @@ interface TopBarProps {
 }
 
 const tabTitles: Record<TabType, string> = {
-  home: "Dashboard & Live Focus",
-  reminders: "Break Schedules & 20-20-20 Rules",
-  exercises: "Guided Eye Workouts",
-  analytics: "Eye Care & Usage Analytics",
-  settings: "App Settings & Preferences",
+  home: "Dashboard",
+  reminders: "Schedules & Rules",
+  exercises: "Eye Exercises",
+  analytics: "Care Analytics",
+  settings: "Settings",
 };
 
 export default function TopBar({ activeTab }: TopBarProps) {
@@ -39,38 +39,33 @@ export default function TopBar({ activeTab }: TopBarProps) {
   const formattedTime = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 
   return (
-    <header className="flex justify-between items-center px-8 py-4 bg-white/70 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-md sticky top-0 z-10 transition-colors">
-      {/* Title */}
+    <header className="px-6 py-3.5 bg-zinc-50/70 dark:bg-zinc-950/70 border-b border-zinc-200/50 dark:border-zinc-800/50 backdrop-blur-xl sticky top-0 z-10 flex items-center justify-between transition-colors select-none">
       <div>
-        <h1 className="text-xl font-extrabold text-slate-800 dark:text-white flex items-center gap-2">
-          <span>✨ illuminePal</span>
-        </h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+        <h1 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight">
           {tabTitles[activeTab]}
-        </p>
+        </h1>
       </div>
 
-      {/* Right Tools Bar */}
-      <div className="flex items-center gap-4">
-        {/* Live Timer Pill */}
-        <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 px-3 py-1.5 rounded-full shadow-inner">
+      <div className="flex items-center gap-3">
+        {/* Minimalist Timer Segment */}
+        <div className="flex items-center gap-2 bg-zinc-200/50 dark:bg-zinc-900/60 border border-zinc-200/60 dark:border-zinc-800/80 px-3 py-1 rounded-full text-xs font-medium">
           <button
             onClick={toggleTimer}
-            className="p-1 rounded-full text-blue-600 dark:text-blue-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all"
-            title={timerStatus === "running" ? "Pause Timer" : "Start Timer"}
+            className="text-zinc-600 dark:text-zinc-300 hover:text-sky-500 transition-colors"
+            title={timerStatus === "running" ? "Pause" : "Start"}
           >
             {timerStatus === "running" ? (
-              <PauseIcon className="w-4 h-4" />
+              <PauseIcon className="w-3.5 h-3.5" />
             ) : (
-              <PlayIcon className="w-4 h-4 ml-0.5" />
+              <PlayIcon className="w-3.5 h-3.5" />
             )}
           </button>
-          <span className="text-sm font-mono font-semibold text-slate-700 dark:text-slate-200 min-w-[48px] text-center">
+          <span className="font-mono text-zinc-800 dark:text-zinc-200 font-medium min-w-[42px] text-center">
             {formattedTime}
           </span>
           <button
             onClick={triggerBreakNow}
-            className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1 rounded-full font-medium transition-all shadow-sm flex items-center gap-1"
+            className="text-[11px] font-semibold text-sky-600 dark:text-sky-400 hover:underline flex items-center gap-1 ml-1"
           >
             <SparklesIcon className="w-3 h-3" />
             <span>Rest</span>
@@ -80,27 +75,27 @@ export default function TopBar({ activeTab }: TopBarProps) {
         {/* Audio Toggle */}
         <button
           onClick={() => setSoundEnabled(!soundEnabled)}
-          className="p-2.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all"
-          title={soundEnabled ? "Mute Break Audio" : "Enable Break Audio"}
+          className="p-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-900/60 transition-colors"
+          title={soundEnabled ? "Mute sounds" : "Enable sounds"}
         >
           {soundEnabled ? (
-            <SpeakerWaveIcon className="w-5 h-5 text-blue-500" />
+            <SpeakerWaveIcon className="w-4 h-4 text-sky-500" />
           ) : (
-            <SpeakerXMarkIcon className="w-5 h-5 text-slate-400" />
+            <SpeakerXMarkIcon className="w-4 h-4" />
           )}
         </button>
 
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          className="flex items-center gap-2 text-xs font-semibold px-3.5 py-2 text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700/80 rounded-xl transition-all border border-slate-200 dark:border-slate-700"
+          className="p-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-900/60 transition-colors"
+          title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
         >
           {isDark ? (
             <SunIcon className="w-4 h-4 text-amber-400" />
           ) : (
-            <MoonIcon className="w-4 h-4 text-indigo-500" />
+            <MoonIcon className="w-4 h-4 text-zinc-600" />
           )}
-          <span>{isDark ? "Light" : "Dark"}</span>
         </button>
       </div>
     </header>

@@ -14,7 +14,7 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState<TabType>("home");
 
   return (
-    <div className="flex bg-slate-100 dark:bg-slate-950 min-h-screen text-slate-900 dark:text-slate-100 font-sans selection:bg-blue-500 selection:text-white transition-colors duration-300">
+    <div className="flex bg-zinc-50 dark:bg-zinc-950 min-h-screen text-zinc-900 dark:text-zinc-100 font-sans selection:bg-sky-500 selection:text-white transition-colors duration-300">
       {/* Interactive Sidebar */}
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 

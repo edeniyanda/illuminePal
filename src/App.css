@@ -11,39 +11,58 @@
   }
 
   @keyframes figure8Path {
-    0% { transform: translate(-96px, 0px); }
-    25% { transform: translate(0px, -40px); }
-    50% { transform: translate(96px, 0px); }
-    75% { transform: translate(0px, 40px); }
-    100% { transform: translate(-96px, 0px); }
+    0% { transform: translate(-80px, 0px); }
+    25% { transform: translate(0px, -32px); }
+    50% { transform: translate(80px, 0px); }
+    75% { transform: translate(0px, 32px); }
+    100% { transform: translate(-80px, 0px); }
   }
 
   @keyframes pulseDepth {
-    0%, 100% { width: 16px; height: 16px; opacity: 0.4; }
-    50% { width: 112px; height: 112px; opacity: 1; }
+    0%, 100% { transform: scale(0.3); opacity: 0.3; }
+    50% { transform: scale(1.8); opacity: 0.95; }
   }
 
   @keyframes sweepMotion {
-    0% { transform: translate(-140px, -60px); }
-    25% { transform: translate(140px, -60px); }
-    50% { transform: translate(140px, 60px); }
-    75% { transform: translate(-140px, 60px); }
-    100% { transform: translate(-140px, -60px); }
+    0% { transform: translate(-120px, -50px); }
+    25% { transform: translate(120px, -50px); }
+    50% { transform: translate(120px, 50px); }
+    75% { transform: translate(-120px, 50px); }
+    100% { transform: translate(-120px, -50px); }
   }
 
   .animate-spin-slow {
-    animation: spinSlow 12s linear infinite;
+    animation: spinSlow 16s linear infinite;
   }
 
   .animate-figure8 {
-    animation: figure8Path 4s ease-in-out infinite;
+    animation: figure8Path 4.5s ease-in-out infinite;
   }
 
   .animate-pulse-depth {
-    animation: pulseDepth 3s ease-in-out infinite;
+    animation: pulseDepth 3.5s ease-in-out infinite;
   }
 
   .animate-sweep-motion {
-    animation: sweepMotion 6s ease-in-out infinite;
+    animation: sweepMotion 6.5s ease-in-out infinite;
   }
+}
+
+/* Custom scrollbar for HIG/Fluent feel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(160, 160, 160, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(160, 160, 160, 0.4);
 }

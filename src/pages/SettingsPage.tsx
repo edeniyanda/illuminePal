@@ -4,7 +4,7 @@ import { useTimer } from "../context/TimerContext";
 import { useTheme } from "../context/ThemeContext";
 import type { AppSettings } from "../types/settings";
 import {
-  Cog6ToothIcon,
+  AdjustmentsHorizontalIcon,
   CheckIcon,
   SpeakerWaveIcon,
   ShieldCheckIcon,
@@ -45,7 +45,6 @@ export default function SettingsPage() {
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 3000);
     } catch {
-      // Local fallback
       updateTimerConfig(settings.short_break_minutes, 20);
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 3000);
@@ -55,130 +54,126 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="p-8 w-full max-w-4xl mx-auto space-y-8 animate-fade-in">
+    <div className="p-6 md:p-8 max-w-4xl mx-auto space-y-6">
       <div>
-        <h2 className="text-2xl font-extrabold text-slate-800 dark:text-white flex items-center gap-2">
-          <Cog6ToothIcon className="w-7 h-7 text-slate-600 dark:text-slate-400" />
-          <span>App Settings & Configuration</span>
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+          <AdjustmentsHorizontalIcon className="w-5 h-5 text-zinc-500" />
+          <span>Settings</span>
         </h2>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          Manage system preferences, Tauri Rust storage synchronization, and notification behaviors.
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+          Application preferences and local storage sync.
         </p>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-sm space-y-6">
-        <h3 className="text-lg font-bold text-slate-800 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3">
-          Break Interval Configuration
-        </h3>
+      <div className="bg-white dark:bg-zinc-900/80 border border-zinc-200/60 dark:border-zinc-800/60 rounded-2xl p-6 shadow-xs space-y-6">
+        {/* Section: Intervals */}
+        <div className="space-y-4">
+          <h3 className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
+            Break Durations
+          </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
-              Short Break Interval (Minutes)
-            </label>
-            <input
-              type="number"
-              min="1"
-              max="120"
-              value={settings.short_break_minutes}
-              onChange={(e) =>
-                setSettings({ ...settings, short_break_minutes: Math.max(1, parseInt(e.target.value) || 20) })
-              }
-              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white px-4 py-3 rounded-2xl font-semibold focus:outline-none focus:border-blue-500"
-            />
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-[11px] font-medium text-zinc-400 block">Short Break Interval (Minutes)</label>
+              <input
+                type="number"
+                min="1"
+                max="120"
+                value={settings.short_break_minutes}
+                onChange={(e) =>
+                  setSettings({ ...settings, short_break_minutes: Math.max(1, parseInt(e.target.value) || 20) })
+                }
+                className="w-full bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 text-zinc-900 dark:text-zinc-100 px-3 py-2 rounded-xl text-xs font-mono focus:outline-none focus:border-sky-500"
+              />
+            </div>
 
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
-              Long Break Interval (Minutes)
-            </label>
-            <input
-              type="number"
-              min="1"
-              max="120"
-              value={settings.long_break_minutes}
-              onChange={(e) =>
-                setSettings({ ...settings, long_break_minutes: Math.max(1, parseInt(e.target.value) || 15) })
-              }
-              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white px-4 py-3 rounded-2xl font-semibold focus:outline-none focus:border-blue-500"
-            />
+            <div className="space-y-1">
+              <label className="text-[11px] font-medium text-zinc-400 block">Long Break Interval (Minutes)</label>
+              <input
+                type="number"
+                min="1"
+                max="120"
+                value={settings.long_break_minutes}
+                onChange={(e) =>
+                  setSettings({ ...settings, long_break_minutes: Math.max(1, parseInt(e.target.value) || 15) })
+                }
+                className="w-full bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 text-zinc-900 dark:text-zinc-100 px-3 py-2 rounded-xl text-xs font-mono focus:outline-none focus:border-sky-500"
+              />
+            </div>
           </div>
         </div>
 
-        <h3 className="text-lg font-bold text-slate-800 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-3 pt-4">
-          Preferences & Toggles
-        </h3>
+        {/* Section: Preferences List */}
+        <div className="space-y-3 pt-4 border-t border-zinc-100 dark:border-zinc-800/60">
+          <h3 className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
+            Preferences
+          </h3>
 
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl">
-            <div className="flex items-center gap-3">
-              <ShieldCheckIcon className="w-5 h-5 text-blue-500" />
-              <div>
-                <h4 className="font-semibold text-slate-800 dark:text-white text-sm">System Notifications</h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Allow native OS desktop notifications when break triggers.
-                </p>
+          <div className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
+            <div className="flex items-center justify-between py-3">
+              <div className="flex items-center gap-3">
+                <ShieldCheckIcon className="w-4 h-4 text-sky-500" />
+                <div>
+                  <h4 className="font-medium text-zinc-900 dark:text-zinc-100 text-xs">Desktop Notifications</h4>
+                  <p className="text-[11px] text-zinc-400">Trigger OS native notification prompts</p>
+                </div>
               </div>
+              <input
+                type="checkbox"
+                checked={settings.notifications_enabled}
+                onChange={(e) => setSettings({ ...settings, notifications_enabled: e.target.checked })}
+                className="w-4 h-4 accent-sky-500 rounded cursor-pointer"
+              />
             </div>
-            <input
-              type="checkbox"
-              checked={settings.notifications_enabled}
-              onChange={(e) => setSettings({ ...settings, notifications_enabled: e.target.checked })}
-              className="w-5 h-5 accent-blue-600 rounded cursor-pointer"
-            />
-          </div>
 
-          <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl">
-            <div className="flex items-center gap-3">
-              <SpeakerWaveIcon className="w-5 h-5 text-indigo-500" />
-              <div>
-                <h4 className="font-semibold text-slate-800 dark:text-white text-sm">Audio Sound Chimes</h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Play Web Audio chimes on break start and end.
-                </p>
+            <div className="flex items-center justify-between py-3">
+              <div className="flex items-center gap-3">
+                <SpeakerWaveIcon className="w-4 h-4 text-indigo-500" />
+                <div>
+                  <h4 className="font-medium text-zinc-900 dark:text-zinc-100 text-xs">Sound Chimes</h4>
+                  <p className="text-[11px] text-zinc-400">Play audio tones on break start and end</p>
+                </div>
               </div>
+              <input
+                type="checkbox"
+                checked={soundEnabled}
+                onChange={(e) => setSoundEnabled(e.target.checked)}
+                className="w-4 h-4 accent-sky-500 rounded cursor-pointer"
+              />
             </div>
-            <input
-              type="checkbox"
-              checked={soundEnabled}
-              onChange={(e) => setSoundEnabled(e.target.checked)}
-              className="w-5 h-5 accent-blue-600 rounded cursor-pointer"
-            />
-          </div>
 
-          <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl">
-            <div className="flex items-center gap-3">
-              {isDark ? <MoonIcon className="w-5 h-5 text-amber-400" /> : <SunIcon className="w-5 h-5 text-blue-500" />}
-              <div>
-                <h4 className="font-semibold text-slate-800 dark:text-white text-sm">Theme Mode</h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Currently active: <span className="font-bold capitalize">{isDark ? "Dark Mode" : "Light Mode"}</span>
-                </p>
+            <div className="flex items-center justify-between py-3">
+              <div className="flex items-center gap-3">
+                {isDark ? <MoonIcon className="w-4 h-4 text-amber-400" /> : <SunIcon className="w-4 h-4 text-zinc-500" />}
+                <div>
+                  <h4 className="font-medium text-zinc-900 dark:text-zinc-100 text-xs">Interface Theme</h4>
+                  <p className="text-[11px] text-zinc-400">Active mode: <span className="capitalize font-medium">{isDark ? "Dark" : "Light"}</span></p>
+                </div>
               </div>
+              <button
+                onClick={toggleTheme}
+                className="px-3 py-1.5 text-xs font-medium rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+              >
+                Toggle Theme
+              </button>
             </div>
-            <button
-              onClick={toggleTheme}
-              className="px-4 py-2 text-xs font-bold rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-white"
-            >
-              Toggle Theme
-            </button>
           </div>
         </div>
 
         {/* Save Action */}
-        <div className="pt-6 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+        <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800/60 flex items-center justify-between">
           {savedSuccess ? (
-            <span className="text-xs font-bold text-emerald-500 flex items-center gap-1.5 animate-fade-in">
-              <CheckIcon className="w-4 h-4" /> Settings saved successfully!
+            <span className="text-xs font-medium text-emerald-500 flex items-center gap-1">
+              <CheckIcon className="w-4 h-4" /> Settings saved successfully
             </span>
           ) : (
-            <span className="text-xs text-slate-400">Settings are persisted to local storage & Rust backend.</span>
+            <span className="text-[11px] text-zinc-400">Persisted locally and synced with Rust backend.</span>
           )}
 
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-3 rounded-2xl shadow-lg shadow-blue-500/25 transition-all transform active:scale-95 disabled:opacity-50"
+            className="bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-xs font-medium px-4 py-2 rounded-xl transition-colors disabled:opacity-50"
           >
             <span>{saving ? "Saving..." : "Save Settings"}</span>
           </button>
