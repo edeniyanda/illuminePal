@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { appWindow } from "@tauri-apps/api/window";
 import Sidebar, { TabType } from "./components/Sidebar";
 import TopBar from "./components/TopBar";
 import Dashboard from "./pages/Dashboard";
@@ -12,6 +13,15 @@ import "./App.css";
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState<TabType>("home");
+
+  // Show native Tauri app window smoothly once React DOM & CSS styles are fully painted
+  useEffect(() => {
+    try {
+      appWindow.show();
+    } catch {
+      // Browser environment fallback
+    }
+  }, []);
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans selection:bg-sky-500 selection:text-white transition-colors duration-300">

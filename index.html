@@ -1,13 +1,28 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" style="background-color: #09090b; color-scheme: dark;">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tauri + React + Typescript</title>
+    <title>IlluminePal</title>
+    <script>
+      (function() {
+        try {
+          var mode = localStorage.getItem("illumine_theme_mode");
+          var isDark = mode === "dark" || (!mode || mode === "system") && window.matchMedia("(prefers-color-scheme: dark)").matches;
+          if (isDark) {
+            document.documentElement.classList.add("dark");
+            document.documentElement.style.backgroundColor = "#09090b";
+          } else {
+            document.documentElement.classList.remove("dark");
+            document.documentElement.style.backgroundColor = "#fafafa";
+          }
+        } catch(e){}
+      })();
+    </script>
   </head>
 
-  <body>
+  <body style="margin: 0; padding: 0; background-color: inherit;">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
