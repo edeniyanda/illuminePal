@@ -20,12 +20,12 @@ fn save_settings(new_settings: AppSettings) {
 }
 
 fn main() {
-    // Build System Tray Menu
+    // Build System Tray Menu for Optikur
     const QUIT_ITEM_ID: &str = "quit";
     const SHOW_ITEM_ID: &str = "show";
 
-    let quit = CustomMenuItem::new(QUIT_ITEM_ID, "Quit IlluminePal");
-    let show = CustomMenuItem::new(SHOW_ITEM_ID, "Show IlluminePal");
+    let quit = CustomMenuItem::new(QUIT_ITEM_ID, "Quit Optikur");
+    let show = CustomMenuItem::new(SHOW_ITEM_ID, "Show Optikur");
     let tray_menu = SystemTrayMenu::new()
         .add_item(show)
         .add_native_item(SystemTrayMenuItem::Separator)

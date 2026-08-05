@@ -57,11 +57,11 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [backgroundTimerEnabled, setBackgroundTimerEnabled] = useState(true);
 
   const [totalBreaksToday, setTotalBreaksToday] = useState(() => {
-    const saved = localStorage.getItem("illumine_breaks_today");
+    const saved = localStorage.getItem("optikur_breaks_today") || localStorage.getItem("illumine_breaks_today");
     return saved ? parseInt(saved, 10) : 0;
   });
   const [streakDays] = useState(() => {
-    const saved = localStorage.getItem("illumine_streak_days");
+    const saved = localStorage.getItem("optikur_streak_days") || localStorage.getItem("illumine_streak_days");
     return saved ? parseInt(saved, 10) : 1;
   });
   const [isBreakOverlayOpen, setIsBreakOverlayOpen] = useState(false);
@@ -146,8 +146,8 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Update localStorage for breaks count
   useEffect(() => {
-    localStorage.setItem("illumine_breaks_today", totalBreaksToday.toString());
-    localStorage.setItem("illumine_streak_days", streakDays.toString());
+    localStorage.setItem("optikur_breaks_today", totalBreaksToday.toString());
+    localStorage.setItem("optikur_streak_days", streakDays.toString());
   }, [totalBreaksToday, streakDays]);
 
   // Main countdown effect with zero-leak interval management
@@ -175,7 +175,7 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             // Native Desktop OS Notification
             if (notificationsEnabled && nativeNotificationsEnabled) {
               sendNativeNotification(
-                "IlluminePal: Eye Break Time",
+                "Optikur — Eye Break Time",
                 "Look away at an object 20 feet (6m) away for 20 seconds."
               );
             }
@@ -199,7 +199,7 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
             if (notificationsEnabled && nativeNotificationsEnabled) {
               sendNativeNotification(
-                "IlluminePal: Break Complete",
+                "Optikur — Break Complete",
                 "Eye rest session complete. You can resume your work."
               );
             }

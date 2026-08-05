@@ -4,11 +4,11 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>IlluminePal</title>
+    <title>Optikur — Intelligent Eye Care</title>
     <script>
       (function() {
         try {
-          var mode = localStorage.getItem("illumine_theme_mode");
+          var mode = localStorage.getItem("optikur_theme_mode") || localStorage.getItem("illumine_theme_mode");
           var isDark = mode === "dark" || (!mode || mode === "system") && window.matchMedia("(prefers-color-scheme: dark)").matches;
           if (isDark) {
             document.documentElement.classList.add("dark");

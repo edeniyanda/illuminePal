@@ -1,19 +1,19 @@
-# IlluminePal
+# Optikur
 
-IlluminePal is an eye-care assistant application built with Tauri, React, and TypeScript. It helps users reduce digital eye strain by encouraging regular breaks based on the 20-20-20 rule and offering guided eye exercises.
+Optikur is a minimalist desktop eye-care assistant built with Tauri, React, and TypeScript. It helps users reduce digital eye strain by encouraging regular breaks based on the 20-20-20 rule and offering guided eye exercises.
 
 ## Features
 
 - **20-20-20 Break Timer**: Customizable timer for work sessions with a full-screen break reminder overlay.
 - **Guided Eye Exercises**: Visual exercises to help stretch and rest eye muscles (figure-8 tracing, blinking pacer, focus depth shift, perimeter sweeps).
-- **Custom Schedules & Settings**: Adjustable focus and break durations, strict break enforcement options, and optional sound notifications.
+- **Custom Schedules & Settings**: Adjustable focus and break durations, strict break enforcement options, audio chimes, and system tray background execution.
 - **Usage Analytics**: Overview of daily breaks completed and a weekly break history chart.
 - **Settings Persistence**: Saves application preferences locally using Tauri's Rust backend.
-- **Dark & Light Mode**: Toggleable interface themes.
+- **Dark, Light & System Themes**: Adheres to Apple HIG and Microsoft Fluent Design system preferences.
 
 ## Tech Stack
 
-- **Frontend**: React 18, TypeScript, Tailwind CSS
+- **Frontend**: React, TypeScript, Tailwind CSS
 - **Desktop Runtime**: Tauri (Rust)
 - **Build Tool**: Vite
 
@@ -60,11 +60,11 @@ npm run build
 ```
 .
 ├── src/
-│   ├── components/      # UI components (Sidebar, TopBar, BreakOverlay)
+│   ├── components/      # UI components (Sidebar, TopBar, BreakOverlay, ToastOverlay)
 │   ├── context/         # React context providers (TimerContext, ThemeContext)
 │   ├── pages/           # Application views (Dashboard, Reminders, Exercises, Analytics, Settings)
 │   ├── types/           # TypeScript type definitions
-│   └── utils/           # Helper utilities (Web Audio API synthesizer)
+│   └── utils/           # Helper utilities (Web Audio API synthesizer, notifications)
 ├── src-tauri/
 │   ├── src/             # Rust source files (main.rs, settings.rs)
 │   └── tauri.conf.json  # Tauri app configuration

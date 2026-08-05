@@ -18,7 +18,7 @@ const ThemeContext = createContext<ThemeContextType>({
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [themeMode, setThemeModeState] = useState<ThemeMode>(() => {
-    const saved = localStorage.getItem("illumine_theme_mode") as ThemeMode | null;
+    const saved = (localStorage.getItem("optikur_theme_mode") || localStorage.getItem("illumine_theme_mode")) as ThemeMode | null;
     return saved && ["light", "dark", "system"].includes(saved) ? saved : "system";
   });
 
@@ -63,13 +63,13 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const setThemeMode = useCallback((mode: ThemeMode) => {
     setThemeModeState(mode);
-    localStorage.setItem("illumine_theme_mode", mode);
+    localStorage.setItem("optikur_theme_mode", mode);
   }, []);
 
   const toggleTheme = useCallback(() => {
     setThemeModeState((prev) => {
       const nextMode: ThemeMode = prev === "dark" ? "light" : "dark";
-      localStorage.setItem("illumine_theme_mode", nextMode);
+      localStorage.setItem("optikur_theme_mode", nextMode);
       return nextMode;
     });
   }, []);

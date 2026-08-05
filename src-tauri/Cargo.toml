@@ -1,7 +1,7 @@
 [package]
-name = "illuminepal"
+name = "optikur"
 version = "0.1.0"
-description = "A Tauri App for Eye Care & Wellness"
+description = "Optikur — Precision Eye Care & Desktop Wellness Assistant"
 authors = ["you"]
 edition = "2021"
 

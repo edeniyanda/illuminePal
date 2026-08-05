@@ -32,9 +32,9 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
           </div>
           <div className="hidden md:block">
             <span className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-              IlluminePal
+              Optikur
             </span>
-            <span className="block text-[10px] text-zinc-400 font-medium">Eye Care & Rest</span>
+            <span className="block text-[10px] text-zinc-400 font-medium">Precision Eye Care</span>
           </div>
         </div>
 
