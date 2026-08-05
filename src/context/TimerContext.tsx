@@ -175,7 +175,7 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             // Native Desktop OS Notification
             if (notificationsEnabled && nativeNotificationsEnabled) {
               sendNativeNotification(
-                "Optikur — Eye Break Time",
+                "Optikur: Eye Break Time",
                 "Look away at an object 20 feet (6m) away for 20 seconds."
               );
             }
@@ -199,7 +199,7 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
             if (notificationsEnabled && nativeNotificationsEnabled) {
               sendNativeNotification(
-                "Optikur — Break Complete",
+                "Optikur: Break Complete",
                 "Eye rest session complete. You can resume your work."
               );
             }
