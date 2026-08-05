@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { useTimer } from "../context/TimerContext";
+import { dbManager } from "../db/db";
 import {
   ChartBarIcon,
   CheckCircleIcon,
@@ -10,18 +12,39 @@ import {
 
 export default function AnalyticsPage() {
   const { totalBreaksToday, streakDays } = useTimer();
-
-  const weeklyData = [
-    { day: "Mon", breaks: 12 },
-    { day: "Tue", breaks: 15 },
-    { day: "Wed", breaks: 10 },
-    { day: "Thu", breaks: 14 },
-    { day: "Fri", breaks: 16 },
-    { day: "Sat", breaks: 8 },
+  const [weeklyData, setWeeklyData] = useState<{ day: string; breaks: number }[]>([
+    { day: "Mon", breaks: 0 },
+    { day: "Tue", breaks: 0 },
+    { day: "Wed", breaks: 0 },
+    { day: "Thu", breaks: 0 },
+    { day: "Fri", breaks: 0 },
+    { day: "Sat", breaks: 0 },
     { day: "Today", breaks: totalBreaksToday },
-  ];
+  ]);
 
-  const maxBreaks = 18;
+  useEffect(() => {
+    let isMounted = true;
+    const fetchStats = async () => {
+      try {
+        const stats = await dbManager.getWeeklyStats();
+        if (isMounted && stats && stats.length > 0) {
+          // Ensure Today reflects live state
+          const updated = stats.map((s) =>
+            s.day === "Today" ? { ...s, breaks: Math.max(s.breaks, totalBreaksToday) } : s
+          );
+          setWeeklyData(updated);
+        }
+      } catch (err) {
+        console.warn("[Optikur DB] Analytics fetch deferred:", err);
+      }
+    };
+    fetchStats();
+    return () => {
+      isMounted = false;
+    };
+  }, [totalBreaksToday]);
+
+  const maxBreaks = Math.max(18, ...weeklyData.map((d) => d.breaks));
 
   return (
     <div className="p-6 md:p-8 max-w-5xl mx-auto space-y-6">

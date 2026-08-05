@@ -4,6 +4,7 @@ import { audioService } from "../utils/audio";
 import { requestNotificationPermission, sendNativeNotification } from "../utils/notification";
 import type { AppSettings } from "../types/settings";
 import ToastOverlay, { ToastMessage } from "../components/ToastOverlay";
+import { dbManager } from "../db/db";
 
 export type TimerMode = "work" | "break";
 export type TimerStatus = "idle" | "running" | "paused" | "break";
@@ -114,7 +115,7 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [notificationsEnabled, nativeNotificationsEnabled]);
 
-  // Load initial settings from Tauri backend if available
+  // Load initial settings from Tauri backend if available & sync SQLite stats
   useEffect(() => {
     const loadSettings = async () => {
       try {
@@ -139,6 +140,17 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
       } catch {
         // Web browser environment
+      }
+
+      // Sync today's break stats from SQLite database non-blockingly
+      try {
+        const todayStr = new Date().toISOString().split("T")[0];
+        const breaksInDb = await dbManager.getBreaksToday(todayStr);
+        if (breaksInDb > 0) {
+          setTotalBreaksToday(breaksInDb);
+        }
+      } catch (err) {
+        console.warn("[Optikur DB] Boot stats sync deferred:", err);
       }
     };
     loadSettings();
@@ -206,7 +218,11 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
             setIsBreakOverlayOpen(false);
             setTimerStatus("running");
-            setTotalBreaksToday((count) => count + 1);
+            setTotalBreaksToday((count) => {
+              const newCount = count + 1;
+              dbManager.logBreak(restSeconds, true, "short_break").catch(() => {});
+              return newCount;
+            });
             return focusMinutes * 60;
           }
         }
@@ -265,15 +281,20 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
     setIsBreakOverlayOpen(false);
     setTimerStatus("running");
-    setTotalBreaksToday((prev) => prev + 1);
+    setTotalBreaksToday((prev) => {
+      const newCount = prev + 1;
+      dbManager.logBreak(restSeconds, true, "short_break").catch(() => {});
+      return newCount;
+    });
     setTimeRemaining(focusMinutes * 60);
-  }, [focusMinutes, soundEnabled]);
+  }, [focusMinutes, restSeconds, soundEnabled]);
 
   const skipBreak = useCallback(() => {
     setIsBreakOverlayOpen(false);
     setTimerStatus("running");
+    dbManager.logBreak(restSeconds, false, "short_break").catch(() => {});
     setTimeRemaining(focusMinutes * 60);
-  }, [focusMinutes]);
+  }, [focusMinutes, restSeconds]);
 
   const updateTimerConfig = useCallback((newFocusMins: number, newRestSecs: number) => {
     setFocusMinutes(newFocusMins);

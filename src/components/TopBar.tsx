@@ -1,5 +1,6 @@
 import { useTheme } from "../context/ThemeContext";
 import { useTimer } from "../context/TimerContext";
+import { useAuth } from "../context/AuthContext";
 import {
   SunIcon,
   MoonIcon,
@@ -9,6 +10,8 @@ import {
   PlayIcon,
   PauseIcon,
   SparklesIcon,
+  UserIcon,
+  ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import type { TabType } from "./Sidebar";
 
@@ -26,6 +29,7 @@ const tabTitles: Record<TabType, string> = {
 
 export default function TopBar({ activeTab }: TopBarProps) {
   const { themeMode, setThemeMode } = useTheme();
+  const { authState, user, openAuthModal, signOut } = useAuth();
   const {
     timeRemaining,
     timerStatus,
@@ -48,6 +52,40 @@ export default function TopBar({ activeTab }: TopBarProps) {
       </div>
 
       <div className="flex items-center gap-3">
+        {/* Auth Status Pill / Profile Badge */}
+        {authState === "authenticated" && user ? (
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={openAuthModal}
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-full text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 transition-all shadow-xs cursor-pointer"
+              title={`Signed in as ${user.email} (Local SQLite Synced)`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <div className="w-4 h-4 rounded-full bg-gradient-to-tr from-sky-500 to-indigo-600 text-[9px] font-bold text-white flex items-center justify-center uppercase">
+                {user.name?.[0] || user.email[0]}
+              </div>
+              <span className="max-w-[90px] truncate">{user.name}</span>
+            </button>
+            <button
+              onClick={signOut}
+              className="p-1 rounded-md text-zinc-400 hover:text-rose-500 hover:bg-zinc-200/60 dark:hover:bg-zinc-900/60 transition-colors"
+              title="Sign Out"
+            >
+              <ArrowRightOnRectangleIcon className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={openAuthModal}
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 rounded-full text-[11px] font-semibold text-sky-600 dark:text-sky-400 transition-all shadow-xs cursor-pointer"
+            title="Guest Mode active. Click to sign in or create an account."
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
+            <UserIcon className="w-3.5 h-3.5" />
+            <span>Guest (Sign In)</span>
+          </button>
+        )}
+
         {/* Minimalist Timer Segment */}
         <div className="flex items-center gap-2 bg-zinc-200/50 dark:bg-zinc-900/60 border border-zinc-200/60 dark:border-zinc-800/80 px-3 py-1 rounded-full text-xs font-medium">
           <button

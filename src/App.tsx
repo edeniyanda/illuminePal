@@ -8,7 +8,9 @@ import ExercisesPage from "./pages/ExercisesPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
 import SettingsPage from "./pages/SettingsPage";
 import BreakOverlay from "./components/BreakOverlay";
+import AuthModal from "./components/AuthModal";
 import { TimerProvider } from "./context/TimerContext";
+import { AuthProvider } from "./context/AuthContext";
 import "./App.css";
 
 function AppContent() {
@@ -44,14 +46,19 @@ function AppContent() {
 
       {/* Fullscreen Break Shield Modal Overlay */}
       <BreakOverlay />
+
+      {/* Glassmorphic Auth System Modal */}
+      <AuthModal />
     </div>
   );
 }
 
 export default function App() {
   return (
-    <TimerProvider>
-      <AppContent />
-    </TimerProvider>
+    <AuthProvider>
+      <TimerProvider>
+        <AppContent />
+      </TimerProvider>
+    </AuthProvider>
   );
 }
