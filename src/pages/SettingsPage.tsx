@@ -11,16 +11,37 @@ import {
   MoonIcon,
   SunIcon,
   ComputerDesktopIcon,
+  BellIcon,
+  WindowIcon,
+  Square2StackIcon,
 } from "@heroicons/react/24/outline";
 
 export default function SettingsPage() {
-  const { focusMinutes, updateTimerConfig, soundEnabled, setSoundEnabled } = useTimer();
+  const {
+    focusMinutes,
+    updateTimerConfig,
+    soundEnabled,
+    setSoundEnabled,
+    notificationsEnabled,
+    setNotificationsEnabled,
+    overlayNotificationsEnabled,
+    setOverlayNotificationsEnabled,
+    nativeNotificationsEnabled,
+    setNativeNotificationsEnabled,
+    backgroundTimerEnabled,
+    setBackgroundTimerEnabled,
+    addToast,
+  } = useTimer();
+
   const { themeMode, setThemeMode, isDark } = useTheme();
 
   const [settings, setSettings] = useState<AppSettings>({
     short_break_minutes: focusMinutes,
     long_break_minutes: 15,
-    notifications_enabled: true,
+    notifications_enabled: notificationsEnabled,
+    overlay_notifications_enabled: overlayNotificationsEnabled,
+    native_notifications_enabled: nativeNotificationsEnabled,
+    background_timer_enabled: backgroundTimerEnabled,
   });
 
   const [saving, setSaving] = useState(false);
@@ -43,11 +64,23 @@ export default function SettingsPage() {
     try {
       await invoke("save_settings", { newSettings: settings });
       updateTimerConfig(settings.short_break_minutes, 20);
+      setNotificationsEnabled(settings.notifications_enabled);
+      setOverlayNotificationsEnabled(settings.overlay_notifications_enabled);
+      setNativeNotificationsEnabled(settings.native_notifications_enabled);
+      setBackgroundTimerEnabled(settings.background_timer_enabled);
+
       setSavedSuccess(true);
+      addToast("Settings Persisted", "Your notification & schedule preferences were saved.", "success");
       setTimeout(() => setSavedSuccess(false), 3000);
     } catch {
       updateTimerConfig(settings.short_break_minutes, 20);
+      setNotificationsEnabled(settings.notifications_enabled);
+      setOverlayNotificationsEnabled(settings.overlay_notifications_enabled);
+      setNativeNotificationsEnabled(settings.native_notifications_enabled);
+      setBackgroundTimerEnabled(settings.background_timer_enabled);
+
       setSavedSuccess(true);
+      addToast("Settings Updated", "Preferences applied successfully.", "success");
       setTimeout(() => setSavedSuccess(false), 3000);
     } finally {
       setSaving(false);
@@ -62,7 +95,7 @@ export default function SettingsPage() {
           <span>Settings</span>
         </h2>
         <p className="text-xs text-zinc-500 dark:text-zinc-400">
-          Application preferences and local storage sync.
+          Notification preferences, background execution, and break rules.
         </p>
       </div>
 
@@ -89,7 +122,7 @@ export default function SettingsPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 block">Long Break Interval (Minutes)</label>
+              <label className="text-[11px] font-medium text-zinc-400 block">Long Break Interval (Minutes)</label>
               <input
                 type="number"
                 min="1"
@@ -104,19 +137,20 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Section: Preferences List */}
+        {/* Section: Notification Customization */}
         <div className="space-y-3 pt-4 border-t border-zinc-200/60 dark:border-zinc-800/60">
           <h3 className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
-            Preferences
+            Notification Customization
           </h3>
 
           <div className="divide-y divide-zinc-200/60 dark:divide-zinc-800/60">
+            {/* Master Notification Switch */}
             <div className="flex items-center justify-between py-3">
               <div className="flex items-center gap-3">
-                <ShieldCheckIcon className="w-4 h-4 text-sky-500" />
+                <BellIcon className="w-4 h-4 text-sky-500" />
                 <div>
-                  <h4 className="font-medium text-zinc-900 dark:text-zinc-100 text-xs">Desktop Notifications</h4>
-                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Trigger OS native notification prompts</p>
+                  <h4 className="font-medium text-zinc-900 dark:text-zinc-100 text-xs">Master Notification System</h4>
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Enable or disable all notification triggers</p>
                 </div>
               </div>
               <input
@@ -127,12 +161,66 @@ export default function SettingsPage() {
               />
             </div>
 
+            {/* In-App Toast Overlay Switch */}
             <div className="flex items-center justify-between py-3">
               <div className="flex items-center gap-3">
-                <SpeakerWaveIcon className="w-4 h-4 text-indigo-500" />
+                <Square2StackIcon className="w-4 h-4 text-indigo-500" />
                 <div>
-                  <h4 className="font-medium text-zinc-900 dark:text-zinc-100 text-xs">Sound Chimes</h4>
-                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Play audio tones on break start and end</p>
+                  <h4 className="font-medium text-zinc-900 dark:text-zinc-100 text-xs">In-App Overlay Toasts</h4>
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Show clean floating notification toasts in top-right screen area</p>
+                </div>
+              </div>
+              <input
+                type="checkbox"
+                disabled={!settings.notifications_enabled}
+                checked={settings.notifications_enabled && settings.overlay_notifications_enabled}
+                onChange={(e) => setSettings({ ...settings, overlay_notifications_enabled: e.target.checked })}
+                className="w-4 h-4 accent-sky-500 rounded cursor-pointer disabled:opacity-40"
+              />
+            </div>
+
+            {/* Native OS Notification Switch */}
+            <div className="flex items-center justify-between py-3">
+              <div className="flex items-center gap-3">
+                <ShieldCheckIcon className="w-4 h-4 text-emerald-500" />
+                <div>
+                  <h4 className="font-medium text-zinc-900 dark:text-zinc-100 text-xs">Desktop OS Native Notifications</h4>
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Trigger Windows / macOS native desktop notification toasts</p>
+                </div>
+              </div>
+              <input
+                type="checkbox"
+                disabled={!settings.notifications_enabled}
+                checked={settings.notifications_enabled && settings.native_notifications_enabled}
+                onChange={(e) => setSettings({ ...settings, native_notifications_enabled: e.target.checked })}
+                className="w-4 h-4 accent-sky-500 rounded cursor-pointer disabled:opacity-40"
+              />
+            </div>
+
+            {/* Background & System Tray Switch */}
+            <div className="flex items-center justify-between py-3">
+              <div className="flex items-center gap-3">
+                <WindowIcon className="w-4 h-4 text-amber-500" />
+                <div>
+                  <h4 className="font-medium text-zinc-900 dark:text-zinc-100 text-xs">Background & System Tray Execution</h4>
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Keep timer running and trigger notifications when window is closed to system tray</p>
+                </div>
+              </div>
+              <input
+                type="checkbox"
+                checked={settings.background_timer_enabled}
+                onChange={(e) => setSettings({ ...settings, background_timer_enabled: e.target.checked })}
+                className="w-4 h-4 accent-sky-500 rounded cursor-pointer"
+              />
+            </div>
+
+            {/* Sound Audio Chimes */}
+            <div className="flex items-center justify-between py-3">
+              <div className="flex items-center gap-3">
+                <SpeakerWaveIcon className="w-4 h-4 text-sky-500" />
+                <div>
+                  <h4 className="font-medium text-zinc-900 dark:text-zinc-100 text-xs">Audio Sound Chimes</h4>
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Play Web Audio tones on break start and completion</p>
                 </div>
               </div>
               <input
@@ -143,6 +231,7 @@ export default function SettingsPage() {
               />
             </div>
 
+            {/* Theme Control */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3">
               <div className="flex items-center gap-3">
                 {isDark ? <MoonIcon className="w-4 h-4 text-amber-400" /> : <SunIcon className="w-4 h-4 text-zinc-500" />}
@@ -154,7 +243,6 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              {/* HIG/Fluent Segmented Picker */}
               <div className="inline-flex items-center bg-zinc-100 dark:bg-zinc-800/80 p-0.5 rounded-xl border border-zinc-200/60 dark:border-zinc-700/60 text-xs">
                 <OptionButton
                   active={themeMode === "light"}
@@ -183,7 +271,7 @@ export default function SettingsPage() {
         <div className="pt-4 border-t border-zinc-200/60 dark:border-zinc-800/60 flex items-center justify-between">
           {savedSuccess ? (
             <span className="text-xs font-medium text-emerald-500 flex items-center gap-1">
-              <CheckIcon className="w-4 h-4" /> Settings saved successfully
+              <CheckIcon className="w-4 h-4" /> Preferences saved successfully
             </span>
           ) : (
             <span className="text-[11px] text-zinc-500 dark:text-zinc-400">Persisted locally and synced with Rust backend.</span>

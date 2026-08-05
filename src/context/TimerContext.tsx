@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { invoke } from "@tauri-apps/api/tauri";
 import { audioService } from "../utils/audio";
+import { requestNotificationPermission, sendNativeNotification } from "../utils/notification";
 import type { AppSettings } from "../types/settings";
+import ToastOverlay, { ToastMessage } from "../components/ToastOverlay";
 
 export type TimerMode = "work" | "break";
 export type TimerStatus = "idle" | "running" | "paused" | "break";
@@ -13,9 +15,14 @@ interface TimerContextType {
   timerStatus: TimerStatus;
   soundEnabled: boolean;
   strictMode: boolean;
+  notificationsEnabled: boolean;
+  overlayNotificationsEnabled: boolean;
+  nativeNotificationsEnabled: boolean;
+  backgroundTimerEnabled: boolean;
   totalBreaksToday: number;
   streakDays: number;
   isBreakOverlayOpen: boolean;
+  toasts: ToastMessage[];
   toggleTimer: () => void;
   resetTimer: () => void;
   skipBreak: () => void;
@@ -23,7 +30,13 @@ interface TimerContextType {
   completeBreak: () => void;
   setSoundEnabled: (enabled: boolean) => void;
   setStrictMode: (strict: boolean) => void;
+  setNotificationsEnabled: (enabled: boolean) => void;
+  setOverlayNotificationsEnabled: (enabled: boolean) => void;
+  setNativeNotificationsEnabled: (enabled: boolean) => void;
+  setBackgroundTimerEnabled: (enabled: boolean) => void;
   updateTimerConfig: (focusMins: number, restSecs: number) => void;
+  addToast: (title: string, message: string, type?: "break" | "info" | "success", actionLabel?: string, onAction?: () => void) => void;
+  dismissToast: (id: string) => void;
 }
 
 const TimerContext = createContext<TimerContextType | undefined>(undefined);
@@ -38,6 +51,11 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [timerStatus, setTimerStatus] = useState<TimerStatus>("idle");
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [strictMode, setStrictMode] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [overlayNotificationsEnabled, setOverlayNotificationsEnabled] = useState(true);
+  const [nativeNotificationsEnabled, setNativeNotificationsEnabled] = useState(true);
+  const [backgroundTimerEnabled, setBackgroundTimerEnabled] = useState(true);
+
   const [totalBreaksToday, setTotalBreaksToday] = useState(() => {
     const saved = localStorage.getItem("illumine_breaks_today");
     return saved ? parseInt(saved, 10) : 0;
@@ -47,6 +65,35 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return saved ? parseInt(saved, 10) : 1;
   });
   const [isBreakOverlayOpen, setIsBreakOverlayOpen] = useState(false);
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+
+  const addToast = useCallback((
+    title: string,
+    message: string,
+    type: "break" | "info" | "success" = "info",
+    actionLabel?: string,
+    onAction?: () => void
+  ) => {
+    const id = Date.now().toString() + Math.random().toString().slice(2, 6);
+    const newToast: ToastMessage = { id, title, message, type, actionLabel, onAction };
+    setToasts((prev) => [...prev, newToast]);
+
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 5000);
+  }, []);
+
+  const dismissToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  // Request native OS notification permissions on boot
+  useEffect(() => {
+    if (notificationsEnabled && nativeNotificationsEnabled) {
+      requestNotificationPermission();
+    }
+  }, [notificationsEnabled, nativeNotificationsEnabled]);
 
   // Load initial settings from Tauri backend if available
   useEffect(() => {
@@ -58,9 +105,21 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             setFocusMinutes(settings.short_break_minutes);
             setTimeRemaining(settings.short_break_minutes * 60);
           }
+          if (typeof settings.notifications_enabled === "boolean") {
+            setNotificationsEnabled(settings.notifications_enabled);
+          }
+          if (typeof settings.overlay_notifications_enabled === "boolean") {
+            setOverlayNotificationsEnabled(settings.overlay_notifications_enabled);
+          }
+          if (typeof settings.native_notifications_enabled === "boolean") {
+            setNativeNotificationsEnabled(settings.native_notifications_enabled);
+          }
+          if (typeof settings.background_timer_enabled === "boolean") {
+            setBackgroundTimerEnabled(settings.background_timer_enabled);
+          }
         }
       } catch {
-        // Running in standard web browser environment
+        // Web browser environment
       }
     };
     loadSettings();
@@ -84,6 +143,24 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             if (soundEnabled) {
               audioService.playBreakStart();
             }
+
+            // In-app Overlay Toast
+            if (notificationsEnabled && overlayNotificationsEnabled) {
+              addToast(
+                "20-20-20 Eye Break",
+                "Look 20 feet away for 20 seconds to protect your eyes.",
+                "break"
+              );
+            }
+
+            // Native Desktop OS Notification (triggers even if app is backgrounded/minimized!)
+            if (notificationsEnabled && nativeNotificationsEnabled) {
+              sendNativeNotification(
+                "IlluminePal — Eye Break Time",
+                "Look away at an object 20 feet (6m) away for 20 seconds."
+              );
+            }
+
             setTimerStatus("break");
             setIsBreakOverlayOpen(true);
             return restSeconds;
@@ -92,6 +169,22 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             if (soundEnabled) {
               audioService.playBreakComplete();
             }
+
+            if (notificationsEnabled && overlayNotificationsEnabled) {
+              addToast(
+                "Break Completed",
+                "Great job resting your eyes! You can resume work.",
+                "success"
+              );
+            }
+
+            if (notificationsEnabled && nativeNotificationsEnabled) {
+              sendNativeNotification(
+                "IlluminePal — Break Complete",
+                "Eye rest session complete. You can resume your work."
+              );
+            }
+
             setIsBreakOverlayOpen(false);
             setTimerStatus("running");
             setTotalBreaksToday((count) => count + 1);
@@ -103,7 +196,16 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [timerStatus, focusMinutes, restSeconds, soundEnabled]);
+  }, [
+    timerStatus,
+    focusMinutes,
+    restSeconds,
+    soundEnabled,
+    notificationsEnabled,
+    overlayNotificationsEnabled,
+    nativeNotificationsEnabled,
+    addToast,
+  ]);
 
   const toggleTimer = useCallback(() => {
     setTimerStatus((current) => {
@@ -123,10 +225,20 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (soundEnabled) {
       audioService.playBreakStart();
     }
+    if (notificationsEnabled && overlayNotificationsEnabled) {
+      addToast(
+        "Eye Break Triggered",
+        "Look 20 feet away for 20 seconds.",
+        "break"
+      );
+    }
+    if (notificationsEnabled && nativeNotificationsEnabled) {
+      sendNativeNotification("IlluminePal", "Time for a 20-second eye rest break!");
+    }
     setTimerStatus("break");
     setTimeRemaining(restSeconds);
     setIsBreakOverlayOpen(true);
-  }, [restSeconds, soundEnabled]);
+  }, [restSeconds, soundEnabled, notificationsEnabled, overlayNotificationsEnabled, nativeNotificationsEnabled, addToast]);
 
   const completeBreak = useCallback(() => {
     if (soundEnabled) {
@@ -160,9 +272,14 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         timerStatus,
         soundEnabled,
         strictMode,
+        notificationsEnabled,
+        overlayNotificationsEnabled,
+        nativeNotificationsEnabled,
+        backgroundTimerEnabled,
         totalBreaksToday,
         streakDays,
         isBreakOverlayOpen,
+        toasts,
         toggleTimer,
         resetTimer,
         skipBreak,
@@ -170,10 +287,18 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         completeBreak,
         setSoundEnabled,
         setStrictMode,
+        setNotificationsEnabled,
+        setOverlayNotificationsEnabled,
+        setNativeNotificationsEnabled,
+        setBackgroundTimerEnabled,
         updateTimerConfig,
+        addToast,
+        dismissToast,
       }}
     >
       {children}
+      {/* Toast Notification Banner System */}
+      <ToastOverlay toasts={toasts} onDismiss={dismissToast} />
     </TimerContext.Provider>
   );
 };

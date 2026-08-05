@@ -56,6 +56,17 @@ input, textarea {
     100% { transform: translate(-120px, -50px); }
   }
 
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
   .animate-spin-slow {
     animation: spinSlow 16s linear infinite;
   }
@@ -70,6 +81,10 @@ input, textarea {
 
   .animate-sweep-motion {
     animation: sweepMotion 6.5s ease-in-out infinite;
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 }
 

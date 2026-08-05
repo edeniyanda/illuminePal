@@ -11,18 +11,30 @@
     "version": "0.1.0"
   },
   "tauri": {
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
+    },
     "allowlist": {
       "all": false,
+      "notification": {
+        "all": true
+      },
       "shell": {
         "all": false,
         "open": true
+      },
+      "window": {
+        "all": false,
+        "hide": true,
+        "show": true
       }
     },
     "windows": [
       {
-        "title": "illuminepal",
-        "width": 800,
-        "height": 600
+        "title": "IlluminePal",
+        "width": 960,
+        "height": 680
       }
     ],
     "security": {

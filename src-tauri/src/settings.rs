@@ -2,19 +2,25 @@ use serde::{Serialize, Deserialize};
 use std::{fs, path::PathBuf};
 use directories::ProjectDirs;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct AppSettings {
     pub short_break_minutes: u32,
     pub long_break_minutes: u32,
     pub notifications_enabled: bool,
+    pub overlay_notifications_enabled: bool,
+    pub native_notifications_enabled: bool,
+    pub background_timer_enabled: bool,
 }
 
 impl Default for AppSettings {
     fn default() -> Self {
         Self {
-            short_break_minutes: 5,
+            short_break_minutes: 20,
             long_break_minutes: 15,
             notifications_enabled: true,
+            overlay_notifications_enabled: true,
+            native_notifications_enabled: true,
+            background_timer_enabled: true,
         }
     }
 }
@@ -27,9 +33,8 @@ impl AppSettings {
                 return parsed;
             }
         }
-        // fallback to default
         let default = AppSettings::default();
-        default.save(); // save default for first run
+        default.save();
         default
     }
 
