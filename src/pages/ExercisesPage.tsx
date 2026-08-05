@@ -52,11 +52,24 @@ export default function ExercisesPage() {
   const [timeLeft, setTimeLeft] = useState(selectedExercise.duration);
   const [completedCount, setCompletedCount] = useState(0);
 
+  // Reset exercise state when routine changes
   useEffect(() => {
     setIsPlaying(false);
     setTimeLeft(selectedExercise.duration);
   }, [selectedExercise]);
 
+  // Page visibility API: Suspend animations & intervals when tab/window is hidden to save CPU/GPU RAM
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setIsPlaying(false);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, []);
+
+  // Main countdown timer loop with automatic cleanup
   useEffect(() => {
     if (!isPlaying) return;
 
@@ -88,7 +101,7 @@ export default function ExercisesPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-800/80 px-3 py-1.5 rounded-xl text-xs text-zinc-600 dark:text-zinc-300 font-medium">
+        <div className="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-800/80 px-3 py-1.5 rounded-xl text-xs text-zinc-600 dark:text-zinc-300 font-medium select-none">
           <CheckCircleIcon className="w-4 h-4 text-emerald-500" />
           <span>Completed: {completedCount}</span>
         </div>
@@ -103,9 +116,9 @@ export default function ExercisesPage() {
               <div
                 key={ex.id}
                 onClick={() => setSelectedExercise(ex)}
-                className={`p-3.5 rounded-xl cursor-pointer border transition-all ${
+                className={`p-3.5 rounded-xl cursor-pointer border transition-all select-none ${
                   isSelected
-                    ? "bg-sky-500/10 border-sky-500/50 text-zinc-900 dark:text-zinc-100"
+                    ? "bg-sky-500/10 border-sky-500/50 text-zinc-900 dark:text-zinc-100 shadow-xs"
                     : "bg-white dark:bg-zinc-900/80 border-zinc-200/60 dark:border-zinc-800/60 text-zinc-800 dark:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700"
                 }`}
               >
@@ -119,7 +132,7 @@ export default function ExercisesPage() {
           })}
         </div>
 
-        {/* Canvas Screen */}
+        {/* Visual Animation Screen */}
         <div className="lg:col-span-2 bg-zinc-950 border border-zinc-800/80 rounded-2xl p-6 shadow-xl flex flex-col items-center justify-between min-h-[380px] text-white relative">
           <div className="w-full flex items-center justify-between border-b border-zinc-800/80 pb-3">
             <div>
@@ -129,7 +142,7 @@ export default function ExercisesPage() {
             <span className="text-xl font-mono font-bold text-sky-400">{timeLeft}s</span>
           </div>
 
-          <div className="relative w-full h-48 flex items-center justify-center my-4">
+          <div className="relative w-full h-48 flex items-center justify-center my-4 overflow-hidden">
             {selectedExercise.type === "figure8" && (
               <div className="relative w-full h-full flex items-center justify-center">
                 <svg className="w-52 h-24 opacity-25 stroke-sky-400" fill="none" strokeWidth="2">

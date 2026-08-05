@@ -1,3 +1,4 @@
+import React, { memo } from "react";
 import { useTimer } from "../context/TimerContext";
 import {
   FireIcon,
@@ -146,7 +147,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
           </div>
         </div>
 
-        {/* Feature Tiles */}
+        {/* Feature Tiles - Memoized to prevent re-renders on timer ticks */}
         <div className="space-y-4 flex flex-col justify-between">
           <MinimalTile
             title="Break Schedules"
@@ -174,7 +175,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
   );
 }
 
-function MinimalTile({
+const MinimalTile = memo(function MinimalTile({
   title,
   subtitle,
   icon: Icon,
@@ -203,4 +204,4 @@ function MinimalTile({
       <ChevronRightIcon className="w-4 h-4 text-zinc-400 group-hover:translate-x-0.5 transition-transform" />
     </div>
   );
-}
+});

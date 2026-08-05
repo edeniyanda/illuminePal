@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 
 export type ThemeMode = "light" | "dark" | "system";
 
@@ -26,7 +26,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
 
-  // Listen to OS system color scheme changes
+  // Listen to OS system color scheme changes with clean disposal
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = (e: MediaQueryListEvent) => {
@@ -61,18 +61,18 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [isDark]);
 
-  const setThemeMode = (mode: ThemeMode) => {
+  const setThemeMode = useCallback((mode: ThemeMode) => {
     setThemeModeState(mode);
     localStorage.setItem("illumine_theme_mode", mode);
-  };
+  }, []);
 
-  const toggleTheme = () => {
-    if (isDark) {
-      setThemeMode("light");
-    } else {
-      setThemeMode("dark");
-    }
-  };
+  const toggleTheme = useCallback(() => {
+    setThemeModeState((prev) => {
+      const nextMode: ThemeMode = prev === "dark" ? "light" : "dark";
+      localStorage.setItem("illumine_theme_mode", nextMode);
+      return nextMode;
+    });
+  }, []);
 
   return (
     <ThemeContext.Provider value={{ themeMode, setThemeMode, isDark, toggleTheme }}>

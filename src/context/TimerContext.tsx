@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import { invoke } from "@tauri-apps/api/tauri";
 import { audioService } from "../utils/audio";
 import { requestNotificationPermission, sendNativeNotification } from "../utils/notification";
@@ -67,6 +67,18 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isBreakOverlayOpen, setIsBreakOverlayOpen] = useState(false);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
+  // Ref map to store active toast auto-dismiss timeouts to prevent memory leaks
+  const toastTimeoutsRef = useRef<Map<string, number>>(new Map());
+
+  const dismissToast = useCallback((id: string) => {
+    const timeoutId = toastTimeoutsRef.current.get(id);
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      toastTimeoutsRef.current.delete(id);
+    }
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
   const addToast = useCallback((
     title: string,
     message: string,
@@ -76,16 +88,23 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   ) => {
     const id = Date.now().toString() + Math.random().toString().slice(2, 6);
     const newToast: ToastMessage = { id, title, message, type, actionLabel, onAction };
+    
     setToasts((prev) => [...prev, newToast]);
 
-    // Auto-dismiss after 5 seconds
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
+    // Track timeout ID in ref map for zero-leak memory management
+    const timeoutId = window.setTimeout(() => {
+      dismissToast(id);
     }, 5000);
-  }, []);
 
-  const dismissToast = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
+    toastTimeoutsRef.current.set(id, timeoutId);
+  }, [dismissToast]);
+
+  // Clean up all pending toast timeouts on unmount
+  useEffect(() => {
+    return () => {
+      toastTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
+      toastTimeoutsRef.current.clear();
+    };
   }, []);
 
   // Request native OS notification permissions on boot
@@ -131,7 +150,7 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     localStorage.setItem("illumine_streak_days", streakDays.toString());
   }, [totalBreaksToday, streakDays]);
 
-  // Main countdown effect
+  // Main countdown effect with zero-leak interval management
   useEffect(() => {
     if (timerStatus !== "running" && timerStatus !== "break") return;
 
@@ -153,10 +172,10 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               );
             }
 
-            // Native Desktop OS Notification (triggers even if app is backgrounded/minimized!)
+            // Native Desktop OS Notification
             if (notificationsEnabled && nativeNotificationsEnabled) {
               sendNativeNotification(
-                "IlluminePal — Eye Break Time",
+                "IlluminePal: Eye Break Time",
                 "Look away at an object 20 feet (6m) away for 20 seconds."
               );
             }
@@ -180,7 +199,7 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
             if (notificationsEnabled && nativeNotificationsEnabled) {
               sendNativeNotification(
-                "IlluminePal — Break Complete",
+                "IlluminePal: Break Complete",
                 "Eye rest session complete. You can resume your work."
               );
             }
