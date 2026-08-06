@@ -117,7 +117,7 @@ export default function TopBar({ activeTab }: TopBarProps) {
               title={`Signed in as ${user.email} (Local SQLite Synced)`}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              <div className="w-4 h-4 rounded-full bg-gradient-to-tr from-sky-500 to-indigo-600 text-[9px] font-bold text-white flex items-center justify-center uppercase">
+              <div className="w-4 h-4 rounded-full bg-sky-500 text-[9px] font-bold text-white flex items-center justify-center uppercase">
                 {user.name?.[0] || user.email[0]}
               </div>
               <span className="max-w-[90px] truncate">{user.name}</span>

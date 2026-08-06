@@ -264,6 +264,27 @@ export default function SettingsPage() {
                 />
               </div>
             </div>
+
+            {/* Onboarding & Reset Trigger */}
+            <div className="flex items-center justify-between py-3">
+              <div className="flex items-center gap-3">
+                <AdjustmentsHorizontalIcon className="w-4 h-4 text-sky-500" />
+                <div>
+                  <h4 className="font-medium text-zinc-900 dark:text-zinc-100 text-xs">View Welcome Screen Again</h4>
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Re-trigger the initial onboarding welcome screen</p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  localStorage.removeItem("optikur_has_onboarded");
+                  window.dispatchEvent(new Event("optikur_show_welcome"));
+                  addToast("Welcome Screen Triggered", "Onboarding screen displayed.", "info");
+                }}
+                className="px-3 py-1.5 bg-sky-500/10 hover:bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-500/30 rounded-xl text-xs font-medium transition-colors cursor-pointer"
+              >
+                Launch Welcome Screen
+              </button>
+            </div>
           </div>
         </div>
 

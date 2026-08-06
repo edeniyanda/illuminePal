@@ -33,12 +33,11 @@ export default function AuthModal() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/60 dark:bg-black/75 backdrop-blur-md transition-all animate-in fade-in duration-200">
-      {/* Background Ambient Glows */}
-      <div className="absolute w-72 h-72 bg-sky-500/20 rounded-full blur-3xl -top-10 -left-10 pointer-events-none" />
-      <div className="absolute w-72 h-72 bg-indigo-500/20 rounded-full blur-3xl -bottom-10 -right-10 pointer-events-none" />
+      {/* Subtle Background Glow */}
+      <div className="absolute w-72 h-72 bg-sky-500/10 rounded-full blur-3xl -top-10 -left-10 pointer-events-none" />
 
       {/* Main Glassmorphic Container */}
-      <div className="relative w-full max-w-md bg-white/85 dark:bg-zinc-900/85 backdrop-blur-2xl border border-white/40 dark:border-zinc-800/80 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-sky-500/10 text-zinc-900 dark:text-zinc-100 overflow-hidden">
+      <div className="relative w-full max-w-md bg-white/95 dark:bg-zinc-900/95 backdrop-blur-2xl border border-zinc-200/80 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-2xl text-zinc-900 dark:text-zinc-100 overflow-hidden">
         {/* Close Button */}
         <button
           onClick={closeAuthModal}
@@ -49,15 +48,13 @@ export default function AuthModal() {
           <XMarkIcon className="w-5 h-5" />
         </button>
 
-        {/* Modal Header Badge */}
+        {/* Modal Header Badge with Standing-Out Icon */}
         <div className="flex flex-col items-center text-center space-y-3 mb-6">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 p-0.5 shadow-lg shadow-sky-500/25 flex items-center justify-center">
-            <div className="w-full h-full bg-white dark:bg-zinc-900 rounded-[14px] flex items-center justify-center">
-              <CloudIcon className="w-6 h-6 text-sky-500" />
-            </div>
+          <div className="w-12 h-12 rounded-2xl bg-sky-500 text-white p-2.5 shadow-md shadow-sky-500/20 flex items-center justify-center">
+            <CloudIcon className="w-7 h-7 stroke-[2]" />
           </div>
           <div>
-            <h3 className="text-xl font-bold tracking-tight bg-gradient-to-r from-zinc-900 via-sky-600 to-indigo-600 dark:from-white dark:via-sky-400 dark:to-indigo-400 bg-clip-text text-transparent">
+            <h3 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
               {tab === "signin" ? "Sign in to Optikur" : "Create Account"}
             </h3>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
@@ -73,7 +70,7 @@ export default function AuthModal() {
             onClick={() => setTab("signin")}
             className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-all ${
               tab === "signin"
-                ? "bg-white dark:bg-zinc-900 text-sky-600 dark:text-sky-400 shadow-sm font-semibold"
+                ? "bg-white dark:bg-zinc-900 text-sky-600 dark:text-sky-400 shadow-xs font-semibold"
                 : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
             }`}
           >
@@ -84,7 +81,7 @@ export default function AuthModal() {
             onClick={() => setTab("signup")}
             className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-all ${
               tab === "signup"
-                ? "bg-white dark:bg-zinc-900 text-sky-600 dark:text-sky-400 shadow-sm font-semibold"
+                ? "bg-white dark:bg-zinc-900 text-sky-600 dark:text-sky-400 shadow-xs font-semibold"
                 : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
             }`}
           >
@@ -155,11 +152,11 @@ export default function AuthModal() {
             </div>
           </div>
 
-          {/* Gradient Action Button */}
+          {/* Solid Theme Action Button */}
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full mt-2 py-3 px-4 bg-gradient-to-r from-sky-500 via-sky-600 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white text-xs font-semibold rounded-xl shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-60 cursor-pointer"
+            className="w-full mt-2 py-3 px-4 bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold rounded-xl shadow-md shadow-sky-500/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-60 cursor-pointer"
           >
             {isLoading ? (
               <>
