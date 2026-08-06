@@ -37,7 +37,7 @@ interface TimerContextType {
   setNativeNotificationsEnabled: (enabled: boolean) => void;
   setBackgroundTimerEnabled: (enabled: boolean) => void;
   updateTimerConfig: (focusMins: number, restSecs: number) => void;
-  addToast: (title: string, message: string, type?: "break" | "info" | "success", actionLabel?: string, onAction?: () => void) => void;
+  addToast: (title: string, message: string, type?: "break" | "info" | "success" | "error", actionLabel?: string, onAction?: () => void) => void;
   dismissToast: (id: string) => void;
 }
 
@@ -85,7 +85,7 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const addToast = useCallback((
     title: string,
     message: string,
-    type: "break" | "info" | "success" = "info",
+    type: "break" | "info" | "success" | "error" = "info",
     actionLabel?: string,
     onAction?: () => void
   ) => {

@@ -26,7 +26,8 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const LOCAL_USER_KEY = "optikur_auth_user";
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+const rawApiUrl = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+const API_BASE = rawApiUrl.replace(/\/+$/, "");
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [authState, setAuthState] = useState<AuthState>("guest");
@@ -38,11 +39,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     try {
       const savedUser = localStorage.getItem(LOCAL_USER_KEY);
+      const token = localStorage.getItem("optikur_jwt_token");
       if (savedUser) {
         const parsed: UserProfile = JSON.parse(savedUser);
         setUser(parsed);
         setAuthState("authenticated");
         dbManager.connectSync(parsed.id).catch(() => {});
+
+        // Optional background check to verify token validity
+        if (token) {
+          fetch(`${API_BASE}/auth/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+            .then((res) => {
+              if (res.status === 401) {
+                console.warn("[Optikur Auth] Session token expired or invalid.");
+              }
+            })
+            .catch(() => {});
+        }
       }
     } catch {
       // Fallback to guest mode
@@ -64,6 +79,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signIn = useCallback(async (email: string, password?: string) => {
     setAuthError(null);
 
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanEmail || !password) {
+      setAuthError("Email and password are required.");
+      return;
+    }
+
     // Online-only check for server authentication
     if (typeof navigator !== "undefined" && !navigator.onLine) {
       setAuthError("Network connection required to sign in. You can continue using Optikur locally in Guest Mode.");
@@ -77,10 +99,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await fetch(`${API_BASE}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: cleanEmail, password }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
         setAuthError(data.error || "Sign in failed. Please check your credentials.");
@@ -91,13 +113,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const authenticatedUser: UserProfile = {
         id: data.user.id,
         email: data.user.email,
-        name: data.user.name || data.user.email.split("@")[0],
+        name: data.user.name || cleanEmail.split("@")[0],
         token: data.token,
       };
 
-      // Migrate local Guest SQLite progress to the authenticated user account
-      await dbManager.migrateGuestDataToUser(authenticatedUser.id);
-
+      // Update state and storage IMMEDIATELY so auth flow completes cleanly
       setUser(authenticatedUser);
       setAuthState("authenticated");
       localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(authenticatedUser));
@@ -106,29 +126,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       setIsAuthModalOpen(false);
 
-      // Connect PowerSync Cloud Sync Stream upon login
-      dbManager.connectSync(authenticatedUser.id).catch((err) => {
-        console.warn("[Optikur Auth] Sync stream connection deferred:", err);
-      });
+      // Background non-blocking SQLite migration & PowerSync sync stream
+      dbManager
+        .migrateGuestDataToUser(authenticatedUser.id)
+        .then(() => dbManager.connectSync(authenticatedUser.id))
+        .catch((err) => {
+          console.warn("[Optikur Auth] Sync stream connection deferred:", err);
+        });
     } catch (err: any) {
-      console.warn("[Optikur Auth API Offline Fallback]:", err);
-      // Fallback local authentication if server port 4000 is not reachable yet
-      const fallbackUser: UserProfile = {
-        id: "usr_" + Math.random().toString(36).substring(2, 9),
-        email: email.trim().toLowerCase(),
-        name: email.split("@")[0].replace(".", " "),
-      };
-      await dbManager.migrateGuestDataToUser(fallbackUser.id);
-      setUser(fallbackUser);
-      setAuthState("authenticated");
-      localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(fallbackUser));
-      setIsAuthModalOpen(false);
-      dbManager.connectSync(fallbackUser.id).catch(() => {});
+      console.warn("[Optikur Auth Network Error]:", err);
+      setAuthError("Unable to connect to authentication server. Please check your connection.");
+      setAuthState("guest");
     }
   }, []);
 
   const signUp = useCallback(async (email: string, password?: string, name?: string) => {
     setAuthError(null);
+
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanEmail || !password) {
+      setAuthError("Email and password are required.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setAuthError("Password must be at least 6 characters long.");
+      return;
+    }
 
     // Online-only check for server account creation
     if (typeof navigator !== "undefined" && !navigator.onLine) {
@@ -143,10 +168,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await fetch(`${API_BASE}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, name }),
+        body: JSON.stringify({ email: cleanEmail, password, name: name?.trim() }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
         setAuthError(data.error || "Account creation failed. Please try again.");
@@ -157,13 +182,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const newUser: UserProfile = {
         id: data.user.id,
         email: data.user.email,
-        name: data.user.name || name || email.split("@")[0],
+        name: data.user.name || name?.trim() || cleanEmail.split("@")[0],
         token: data.token,
       };
 
-      // Migrate local Guest SQLite progress to the new user account
-      await dbManager.migrateGuestDataToUser(newUser.id);
-
+      // Update state and storage IMMEDIATELY so auth flow completes cleanly
       setUser(newUser);
       setAuthState("authenticated");
       localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(newUser));
@@ -172,24 +195,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       setIsAuthModalOpen(false);
 
-      // Connect PowerSync Cloud Sync Stream upon sign up
-      dbManager.connectSync(newUser.id).catch((err) => {
-        console.warn("[Optikur Auth] Sync stream connection deferred:", err);
-      });
+      // Background non-blocking SQLite migration & PowerSync sync stream
+      dbManager
+        .migrateGuestDataToUser(newUser.id)
+        .then(() => dbManager.connectSync(newUser.id))
+        .catch((err) => {
+          console.warn("[Optikur Auth] Sync stream connection deferred:", err);
+        });
     } catch (err: any) {
-      console.warn("[Optikur Auth API Offline Fallback]:", err);
-      // Fallback local authentication if server port 4000 is not reachable yet
-      const fallbackUser: UserProfile = {
-        id: "usr_" + Math.random().toString(36).substring(2, 9),
-        email: email.trim().toLowerCase(),
-        name: name?.trim() || email.split("@")[0],
-      };
-      await dbManager.migrateGuestDataToUser(fallbackUser.id);
-      setUser(fallbackUser);
-      setAuthState("authenticated");
-      localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(fallbackUser));
-      setIsAuthModalOpen(false);
-      dbManager.connectSync(fallbackUser.id).catch(() => {});
+      console.warn("[Optikur Auth Network Error]:", err);
+      setAuthError("Unable to connect to authentication server. Please check your connection.");
+      setAuthState("guest");
     }
   }, []);
 

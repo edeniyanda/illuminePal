@@ -23,6 +23,14 @@ export class PowerSyncConnector implements PowerSyncBackendConnector {
    * Employs short-lived JWT token authorization tied to user.
    */
   async fetchCredentials(): Promise<PowerSyncCredentials> {
+    const savedJwt = typeof localStorage !== "undefined" ? localStorage.getItem("optikur_jwt_token") : null;
+    if (savedJwt) {
+      return {
+        endpoint: this.backendUrl,
+        token: savedJwt,
+      };
+    }
+
     const tokenPayload = {
       sub: this.userId || "optikur_guest",
       iss: "optikur_auth_service",

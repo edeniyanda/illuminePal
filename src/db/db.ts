@@ -36,7 +36,12 @@ export class DatabaseManager {
           },
         });
 
-        await powersync.init();
+        // 3-second timeout guard so SQLite init never hangs callers indefinitely
+        const initTimeout = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("PowerSync init timeout")), 3000)
+        );
+
+        await Promise.race([powersync.init(), initTimeout]);
         this.db = powersync;
         console.log("[Optikur DB] SQLite Database initialized successfully.");
       } catch (error) {
@@ -51,9 +56,9 @@ export class DatabaseManager {
    * Connects to PowerSync cloud sync streaming using secure JWT credentials
    */
   public async connectSync(userId?: string | null): Promise<void> {
-    await this.init();
-    if (!this.db) return;
     try {
+      await this.init();
+      if (!this.db) return;
       if (!this.connector) {
         this.connector = new PowerSyncConnector(userId);
       }
@@ -83,9 +88,9 @@ export class DatabaseManager {
    * to the newly signed up or logged in user's account ID.
    */
   public async migrateGuestDataToUser(newUserId: string): Promise<void> {
-    await this.init();
-    if (!this.db) return;
     try {
+      await this.init();
+      if (!this.db) return;
       await this.db.execute(
         `UPDATE break_logs SET user_id = ? WHERE user_id IS NULL OR user_id = 'guest'`,
         [newUserId]
@@ -100,7 +105,7 @@ export class DatabaseManager {
       );
       console.log(`[Optikur DB] Migrated Guest SQLite records to user: ${newUserId}`);
     } catch (err) {
-      console.error("[Optikur DB] Failed to migrate guest data:", err);
+      console.warn("[Optikur DB] Guest data migration warning:", err);
     }
   }
 
