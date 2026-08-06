@@ -33,7 +33,7 @@ const tabTitles: Record<TabType, string> = {
 
 export default function TopBar({ activeTab }: TopBarProps) {
   const { themeMode, setThemeMode } = useTheme();
-  const { authState, user, openAuthModal, signOut } = useAuth();
+  const { authState, user, openAuthModal, requestSignOut } = useAuth();
   const {
     timeRemaining,
     timerStatus,
@@ -123,7 +123,7 @@ export default function TopBar({ activeTab }: TopBarProps) {
               <span className="max-w-[90px] truncate">{user.name}</span>
             </button>
             <button
-              onClick={signOut}
+              onClick={requestSignOut}
               className="p-1 rounded-md text-zinc-400 hover:text-rose-500 hover:bg-zinc-200/60 dark:hover:bg-zinc-900/60 transition-colors"
               title="Sign Out"
             >

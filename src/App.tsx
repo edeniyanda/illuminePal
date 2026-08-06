@@ -9,6 +9,7 @@ import AnalyticsPage from "./pages/AnalyticsPage";
 import SettingsPage from "./pages/SettingsPage";
 import BreakOverlay from "./components/BreakOverlay";
 import AuthModal from "./components/AuthModal";
+import LogoutModal from "./components/LogoutModal";
 import WelcomeScreen from "./components/WelcomeScreen";
 import { TimerProvider } from "./context/TimerContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -50,6 +51,9 @@ function AppContent() {
 
       {/* Glassmorphic Auth System Modal */}
       <AuthModal />
+
+      {/* Unsynced Data Protection Logout Modal */}
+      <LogoutModal />
 
       {/* First-Time Welcome Screen Onboarding */}
       <WelcomeScreen />

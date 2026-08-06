@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import {
   XMarkIcon,
@@ -17,6 +17,15 @@ export default function AuthModal() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+
+  // Clear form fields whenever AuthModal is opened for clean user switching
+  useEffect(() => {
+    if (isAuthModalOpen) {
+      setEmail("");
+      setPassword("");
+      setName("");
+    }
+  }, [isAuthModalOpen]);
 
   if (!isAuthModalOpen) return null;
 

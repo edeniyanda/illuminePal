@@ -84,6 +84,49 @@ export class DatabaseManager {
   }
 
   /**
+   * Checks if there are pending unsynced records or if the device is currently offline
+   */
+  public async hasPendingSync(): Promise<boolean> {
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      return true;
+    }
+    if (this.db) {
+      try {
+        const status = (this.db as any).currentStatus;
+        if (status?.uploading || status?.connecting || status?.hasUnsyncedData) {
+          return true;
+        }
+      } catch {
+        // Status property fallback
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Cleans up local SQLite records upon logout for complete data isolation.
+   */
+  public async clearUserLocalData(userId?: string | null): Promise<void> {
+    try {
+      await this.init();
+      if (!this.db) return;
+
+      if (userId) {
+        await this.db.execute(`DELETE FROM break_logs WHERE user_id = ?`, [userId]);
+        await this.db.execute(`DELETE FROM daily_stats WHERE user_id = ?`, [userId]);
+        await this.db.execute(`DELETE FROM user_settings WHERE user_id = ?`, [userId]);
+      } else {
+        await this.db.execute(`DELETE FROM break_logs WHERE user_id IS NULL OR user_id = 'guest'`);
+        await this.db.execute(`DELETE FROM daily_stats WHERE user_id IS NULL OR user_id = 'guest'`);
+        await this.db.execute(`DELETE FROM user_settings WHERE user_id IS NULL OR user_id = 'guest'`);
+      }
+      console.log(`[Optikur DB] Cleared local SQLite database records for: ${userId || "guest"}`);
+    } catch (err) {
+      console.warn("[Optikur DB] Error clearing local database records:", err);
+    }
+  }
+
+  /**
    * Seamlessly migrates Guest Mode SQLite records (user_id IS NULL)
    * to the newly signed up or logged in user's account ID.
    */
