@@ -1,16 +1,18 @@
 import { PowerSyncDatabase } from "@powersync/web";
 import { AppSchema, DailyStatsRecord } from "./AppSchema";
+import { PowerSyncConnector } from "./PowerSyncConnector";
 
 /**
  * Local-First Database Manager for Optikur
  * Handles zero-latency SQLite persistence for guest & authenticated users.
- * Degrades gracefully if database initialization takes time.
+ * Integrates background synchronization with Neon Postgres + PowerSync.
  */
 
 export class DatabaseManager {
   private static instance: DatabaseManager;
   public db: PowerSyncDatabase | null = null;
   private initPromise: Promise<void> | null = null;
+  private connector: PowerSyncConnector | null = null;
 
   private constructor() {}
 
@@ -43,6 +45,63 @@ export class DatabaseManager {
     })();
 
     return this.initPromise;
+  }
+
+  /**
+   * Connects to PowerSync cloud sync streaming using secure JWT credentials
+   */
+  public async connectSync(userId?: string | null): Promise<void> {
+    await this.init();
+    if (!this.db) return;
+    try {
+      if (!this.connector) {
+        this.connector = new PowerSyncConnector(userId);
+      }
+      await this.db.connect(this.connector);
+      console.log(`[Optikur DB] Cloud sync stream connected for user ${userId || "guest"}.`);
+    } catch (err) {
+      console.warn("[Optikur DB] Cloud sync connection warning (operating in local-first offline mode):", err);
+    }
+  }
+
+  /**
+   * Disconnects the sync stream gracefully upon sign out
+   */
+  public async disconnectSync(): Promise<void> {
+    if (!this.db) return;
+    try {
+      await this.db.disconnect();
+      this.connector = null;
+      console.log("[Optikur DB] Cloud sync stream disconnected.");
+    } catch (err) {
+      console.warn("[Optikur DB] Disconnect error:", err);
+    }
+  }
+
+  /**
+   * Seamlessly migrates Guest Mode SQLite records (user_id IS NULL)
+   * to the newly signed up or logged in user's account ID.
+   */
+  public async migrateGuestDataToUser(newUserId: string): Promise<void> {
+    await this.init();
+    if (!this.db) return;
+    try {
+      await this.db.execute(
+        `UPDATE break_logs SET user_id = ? WHERE user_id IS NULL OR user_id = 'guest'`,
+        [newUserId]
+      );
+      await this.db.execute(
+        `UPDATE daily_stats SET user_id = ? WHERE user_id IS NULL OR user_id = 'guest'`,
+        [newUserId]
+      );
+      await this.db.execute(
+        `UPDATE user_settings SET user_id = ? WHERE user_id IS NULL OR user_id = 'guest'`,
+        [newUserId]
+      );
+      console.log(`[Optikur DB] Migrated Guest SQLite records to user: ${newUserId}`);
+    } catch (err) {
+      console.error("[Optikur DB] Failed to migrate guest data:", err);
+    }
   }
 
   // --- Break Log Operations ---
@@ -106,8 +165,8 @@ export class DatabaseManager {
     if (!this.db) return 0;
     try {
       const row = await this.db.get<DailyStatsRecord>(
-        `SELECT breaks_completed FROM daily_stats WHERE date = ? AND (user_id = ? OR user_id IS NULL) LIMIT 1`,
-        [dateStr, userId || null]
+        `SELECT breaks_completed FROM daily_stats WHERE date = ? AND (user_id = ? OR (user_id IS NULL AND ? IS NULL)) LIMIT 1`,
+        [dateStr, userId || null, userId || null]
       );
       return row ? row.breaks_completed : 0;
     } catch {
@@ -131,8 +190,8 @@ export class DatabaseManager {
       if (this.db) {
         try {
           const row = await this.db.get<DailyStatsRecord>(
-            `SELECT breaks_completed FROM daily_stats WHERE date = ? AND (user_id = ? OR user_id IS NULL) LIMIT 1`,
-            [dateStr, userId || null]
+            `SELECT breaks_completed FROM daily_stats WHERE date = ? AND (user_id = ? OR (user_id IS NULL AND ? IS NULL)) LIMIT 1`,
+            [dateStr, userId || null, userId || null]
           );
           if (row) breaks = row.breaks_completed;
         } catch {

@@ -1,6 +1,8 @@
+import { useState, useEffect } from "react";
 import { useTheme } from "../context/ThemeContext";
 import { useTimer } from "../context/TimerContext";
 import { useAuth } from "../context/AuthContext";
+import { dbManager } from "../db/db";
 import {
   SunIcon,
   MoonIcon,
@@ -12,6 +14,8 @@ import {
   SparklesIcon,
   UserIcon,
   ArrowRightOnRectangleIcon,
+  CloudIcon,
+  ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import type { TabType } from "./Sidebar";
 
@@ -39,6 +43,34 @@ export default function TopBar({ activeTab }: TopBarProps) {
     setSoundEnabled,
   } = useTimer();
 
+  const [syncStatus, setSyncStatus] = useState<"synced" | "syncing" | "offline">("synced");
+
+  // Track online/offline status and PowerSync sync state reactively
+  useEffect(() => {
+    const handleOnline = () => setSyncStatus("synced");
+    const handleOffline = () => setSyncStatus("offline");
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    // Periodic lightweight sync state check
+    const interval = setInterval(() => {
+      if (!navigator.onLine) {
+        setSyncStatus("offline");
+      } else if (dbManager.db?.currentStatus?.connecting) {
+        setSyncStatus("syncing");
+      } else {
+        setSyncStatus("synced");
+      }
+    }, 3000);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+      clearInterval(interval);
+    };
+  }, []);
+
   const minutes = Math.floor(timeRemaining / 60);
   const seconds = timeRemaining % 60;
   const formattedTime = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
@@ -52,6 +84,30 @@ export default function TopBar({ activeTab }: TopBarProps) {
       </div>
 
       <div className="flex items-center gap-3">
+        {/* Real-time Cloud Sync Indicator (when Authenticated) */}
+        {authState === "authenticated" && (
+          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-zinc-200/50 dark:bg-zinc-900/60 border border-zinc-200/60 dark:border-zinc-800/80 rounded-full text-[11px] font-medium text-zinc-600 dark:text-zinc-300">
+            {syncStatus === "synced" && (
+              <>
+                <CloudIcon className="w-3.5 h-3.5 text-sky-500" />
+                <span className="text-sky-600 dark:text-sky-400 font-semibold">Synced</span>
+              </>
+            )}
+            {syncStatus === "syncing" && (
+              <>
+                <ArrowPathIcon className="w-3.5 h-3.5 text-indigo-500 animate-spin" />
+                <span className="text-indigo-600 dark:text-indigo-400 font-semibold">Syncing...</span>
+              </>
+            )}
+            {syncStatus === "offline" && (
+              <>
+                <CloudIcon className="w-3.5 h-3.5 text-amber-500" />
+                <span className="text-amber-600 dark:text-amber-400 font-semibold">Offline Mode</span>
+              </>
+            )}
+          </div>
+        )}
+
         {/* Auth Status Pill / Profile Badge */}
         {authState === "authenticated" && user ? (
           <div className="flex items-center gap-1.5">

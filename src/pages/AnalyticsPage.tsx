@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTimer } from "../context/TimerContext";
+import { useAuth } from "../context/AuthContext";
 import { dbManager } from "../db/db";
 import {
   ChartBarIcon,
@@ -12,6 +13,7 @@ import {
 
 export default function AnalyticsPage() {
   const { totalBreaksToday, streakDays } = useTimer();
+  const { user } = useAuth();
   const [weeklyData, setWeeklyData] = useState<{ day: string; breaks: number }[]>([
     { day: "Mon", breaks: 0 },
     { day: "Tue", breaks: 0 },
@@ -26,7 +28,7 @@ export default function AnalyticsPage() {
     let isMounted = true;
     const fetchStats = async () => {
       try {
-        const stats = await dbManager.getWeeklyStats();
+        const stats = await dbManager.getWeeklyStats(user?.id);
         if (isMounted && stats && stats.length > 0) {
           // Ensure Today reflects live state
           const updated = stats.map((s) =>
@@ -42,7 +44,7 @@ export default function AnalyticsPage() {
     return () => {
       isMounted = false;
     };
-  }, [totalBreaksToday]);
+  }, [totalBreaksToday, user?.id]);
 
   const maxBreaks = Math.max(18, ...weeklyData.map((d) => d.breaks));
 

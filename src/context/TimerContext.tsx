@@ -5,6 +5,7 @@ import { requestNotificationPermission, sendNativeNotification } from "../utils/
 import type { AppSettings } from "../types/settings";
 import ToastOverlay, { ToastMessage } from "../components/ToastOverlay";
 import { dbManager } from "../db/db";
+import { useAuth } from "./AuthContext";
 
 export type TimerMode = "work" | "break";
 export type TimerStatus = "idle" | "running" | "paused" | "break";
@@ -46,6 +47,7 @@ const DEFAULT_FOCUS_MINUTES = 20;
 const DEFAULT_REST_SECONDS = 20;
 
 export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
   const [focusMinutes, setFocusMinutes] = useState(DEFAULT_FOCUS_MINUTES);
   const [restSeconds, setRestSeconds] = useState(DEFAULT_REST_SECONDS);
   const [timeRemaining, setTimeRemaining] = useState(DEFAULT_FOCUS_MINUTES * 60);
@@ -145,7 +147,7 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       // Sync today's break stats from SQLite database non-blockingly
       try {
         const todayStr = new Date().toISOString().split("T")[0];
-        const breaksInDb = await dbManager.getBreaksToday(todayStr);
+        const breaksInDb = await dbManager.getBreaksToday(todayStr, user?.id);
         if (breaksInDb > 0) {
           setTotalBreaksToday(breaksInDb);
         }
@@ -154,7 +156,7 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     };
     loadSettings();
-  }, []);
+  }, [user?.id]);
 
   // Update localStorage for breaks count
   useEffect(() => {
@@ -220,7 +222,7 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             setTimerStatus("running");
             setTotalBreaksToday((count) => {
               const newCount = count + 1;
-              dbManager.logBreak(restSeconds, true, "short_break").catch(() => {});
+              dbManager.logBreak(restSeconds, true, "short_break", user?.id).catch(() => {});
               return newCount;
             });
             return focusMinutes * 60;
@@ -240,6 +242,7 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     overlayNotificationsEnabled,
     nativeNotificationsEnabled,
     addToast,
+    user?.id,
   ]);
 
   const toggleTimer = useCallback(() => {
@@ -283,18 +286,18 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setTimerStatus("running");
     setTotalBreaksToday((prev) => {
       const newCount = prev + 1;
-      dbManager.logBreak(restSeconds, true, "short_break").catch(() => {});
+      dbManager.logBreak(restSeconds, true, "short_break", user?.id).catch(() => {});
       return newCount;
     });
     setTimeRemaining(focusMinutes * 60);
-  }, [focusMinutes, restSeconds, soundEnabled]);
+  }, [focusMinutes, restSeconds, soundEnabled, user?.id]);
 
   const skipBreak = useCallback(() => {
     setIsBreakOverlayOpen(false);
     setTimerStatus("running");
-    dbManager.logBreak(restSeconds, false, "short_break").catch(() => {});
+    dbManager.logBreak(restSeconds, false, "short_break", user?.id).catch(() => {});
     setTimeRemaining(focusMinutes * 60);
-  }, [focusMinutes, restSeconds]);
+  }, [focusMinutes, restSeconds, user?.id]);
 
   const updateTimerConfig = useCallback((newFocusMins: number, newRestSecs: number) => {
     setFocusMinutes(newFocusMins);

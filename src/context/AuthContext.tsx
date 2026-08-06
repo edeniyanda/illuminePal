@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { dbManager } from "../db/db";
 
 export type AuthState = "guest" | "authenticating" | "authenticated" | "offline";
 
@@ -31,14 +32,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [authError, setAuthError] = useState<string | null>(null);
 
-  // Restore saved session on boot if available
+  // Restore saved session on boot & initiate PowerSync stream if authenticated
   useEffect(() => {
     try {
       const savedUser = localStorage.getItem(LOCAL_USER_KEY);
       if (savedUser) {
-        const parsed = JSON.parse(savedUser);
+        const parsed: UserProfile = JSON.parse(savedUser);
         setUser(parsed);
         setAuthState("authenticated");
+        dbManager.connectSync(parsed.id).catch(() => {});
       }
     } catch {
       // Fallback to guest mode
@@ -59,9 +61,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = useCallback(async (email: string, _password?: string) => {
     setAuthError(null);
+
+    // Online-only check for server authentication
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      setAuthError("Network connection required to sign in. You can continue using Optikur locally in Guest Mode.");
+      return;
+    }
+
     setAuthState("authenticating");
 
-    // Simulate 1-second delay for smooth UI authentication flow (Step 2 Mock)
+    // Simulate 1-second network auth delay
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     if (!email || !email.includes("@")) {
@@ -76,17 +85,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       name: email.split("@")[0].replace(".", " "),
     };
 
+    // Migrate local Guest SQLite progress to the authenticated user account
+    await dbManager.migrateGuestDataToUser(mockUser.id);
+
     setUser(mockUser);
     setAuthState("authenticated");
     localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(mockUser));
     setIsAuthModalOpen(false);
+
+    // Connect PowerSync Cloud Sync Stream upon login
+    dbManager.connectSync(mockUser.id).catch((err) => {
+      console.warn("[Optikur Auth] Sync stream connection deferred:", err);
+    });
   }, []);
 
   const signUp = useCallback(async (email: string, _password?: string, name?: string) => {
     setAuthError(null);
+
+    // Online-only check for server account creation
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      setAuthError("Network connection required to create an account. You can continue using Optikur locally in Guest Mode.");
+      return;
+    }
+
     setAuthState("authenticating");
 
-    // Simulate 1-second delay for smooth UI authentication flow (Step 2 Mock)
+    // Simulate 1-second network auth delay
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     if (!email || !email.includes("@")) {
@@ -101,16 +125,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       name: name?.trim() || email.split("@")[0],
     };
 
+    // Migrate local Guest SQLite progress to the new user account
+    await dbManager.migrateGuestDataToUser(mockUser.id);
+
     setUser(mockUser);
     setAuthState("authenticated");
     localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(mockUser));
     setIsAuthModalOpen(false);
+
+    // Connect PowerSync Cloud Sync Stream upon sign up
+    dbManager.connectSync(mockUser.id).catch((err) => {
+      console.warn("[Optikur Auth] Sync stream connection deferred:", err);
+    });
   }, []);
 
   const signOut = useCallback(() => {
     setUser(null);
     setAuthState("guest");
     localStorage.removeItem(LOCAL_USER_KEY);
+    dbManager.disconnectSync().catch(() => {});
   }, []);
 
   return (
