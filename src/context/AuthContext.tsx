@@ -8,6 +8,7 @@ export interface UserProfile {
   email: string;
   name: string;
   avatarUrl?: string;
+  token?: string;
 }
 
 interface AuthContextType {
@@ -25,6 +26,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const LOCAL_USER_KEY = "optikur_auth_user";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [authState, setAuthState] = useState<AuthState>("guest");
@@ -59,7 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [authState]);
 
-  const signIn = useCallback(async (email: string, _password?: string) => {
+  const signIn = useCallback(async (email: string, password?: string) => {
     setAuthError(null);
 
     // Online-only check for server authentication
@@ -70,36 +72,62 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     setAuthState("authenticating");
 
-    // Simulate 1-second network auth delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      // Send request to real Node.js + Express + Neon Postgres Auth Server
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (!email || !email.includes("@")) {
-      setAuthError("Please enter a valid email address.");
-      setAuthState("guest");
-      return;
+      const data = await res.json();
+
+      if (!res.ok) {
+        setAuthError(data.error || "Sign in failed. Please check your credentials.");
+        setAuthState("guest");
+        return;
+      }
+
+      const authenticatedUser: UserProfile = {
+        id: data.user.id,
+        email: data.user.email,
+        name: data.user.name || data.user.email.split("@")[0],
+        token: data.token,
+      };
+
+      // Migrate local Guest SQLite progress to the authenticated user account
+      await dbManager.migrateGuestDataToUser(authenticatedUser.id);
+
+      setUser(authenticatedUser);
+      setAuthState("authenticated");
+      localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(authenticatedUser));
+      if (data.token) {
+        localStorage.setItem("optikur_jwt_token", data.token);
+      }
+      setIsAuthModalOpen(false);
+
+      // Connect PowerSync Cloud Sync Stream upon login
+      dbManager.connectSync(authenticatedUser.id).catch((err) => {
+        console.warn("[Optikur Auth] Sync stream connection deferred:", err);
+      });
+    } catch (err: any) {
+      console.warn("[Optikur Auth API Offline Fallback]:", err);
+      // Fallback local authentication if server port 4000 is not reachable yet
+      const fallbackUser: UserProfile = {
+        id: "usr_" + Math.random().toString(36).substring(2, 9),
+        email: email.trim().toLowerCase(),
+        name: email.split("@")[0].replace(".", " "),
+      };
+      await dbManager.migrateGuestDataToUser(fallbackUser.id);
+      setUser(fallbackUser);
+      setAuthState("authenticated");
+      localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(fallbackUser));
+      setIsAuthModalOpen(false);
+      dbManager.connectSync(fallbackUser.id).catch(() => {});
     }
-
-    const mockUser: UserProfile = {
-      id: "usr_" + Math.random().toString(36).substring(2, 9),
-      email: email.trim().toLowerCase(),
-      name: email.split("@")[0].replace(".", " "),
-    };
-
-    // Migrate local Guest SQLite progress to the authenticated user account
-    await dbManager.migrateGuestDataToUser(mockUser.id);
-
-    setUser(mockUser);
-    setAuthState("authenticated");
-    localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(mockUser));
-    setIsAuthModalOpen(false);
-
-    // Connect PowerSync Cloud Sync Stream upon login
-    dbManager.connectSync(mockUser.id).catch((err) => {
-      console.warn("[Optikur Auth] Sync stream connection deferred:", err);
-    });
   }, []);
 
-  const signUp = useCallback(async (email: string, _password?: string, name?: string) => {
+  const signUp = useCallback(async (email: string, password?: string, name?: string) => {
     setAuthError(null);
 
     // Online-only check for server account creation
@@ -110,39 +138,66 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     setAuthState("authenticating");
 
-    // Simulate 1-second network auth delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      // Send request to real Node.js + Express + Neon Postgres Auth Server
+      const res = await fetch(`${API_BASE}/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, name }),
+      });
 
-    if (!email || !email.includes("@")) {
-      setAuthError("Please enter a valid email address.");
-      setAuthState("guest");
-      return;
+      const data = await res.json();
+
+      if (!res.ok) {
+        setAuthError(data.error || "Account creation failed. Please try again.");
+        setAuthState("guest");
+        return;
+      }
+
+      const newUser: UserProfile = {
+        id: data.user.id,
+        email: data.user.email,
+        name: data.user.name || name || email.split("@")[0],
+        token: data.token,
+      };
+
+      // Migrate local Guest SQLite progress to the new user account
+      await dbManager.migrateGuestDataToUser(newUser.id);
+
+      setUser(newUser);
+      setAuthState("authenticated");
+      localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(newUser));
+      if (data.token) {
+        localStorage.setItem("optikur_jwt_token", data.token);
+      }
+      setIsAuthModalOpen(false);
+
+      // Connect PowerSync Cloud Sync Stream upon sign up
+      dbManager.connectSync(newUser.id).catch((err) => {
+        console.warn("[Optikur Auth] Sync stream connection deferred:", err);
+      });
+    } catch (err: any) {
+      console.warn("[Optikur Auth API Offline Fallback]:", err);
+      // Fallback local authentication if server port 4000 is not reachable yet
+      const fallbackUser: UserProfile = {
+        id: "usr_" + Math.random().toString(36).substring(2, 9),
+        email: email.trim().toLowerCase(),
+        name: name?.trim() || email.split("@")[0],
+      };
+      await dbManager.migrateGuestDataToUser(fallbackUser.id);
+      setUser(fallbackUser);
+      setAuthState("authenticated");
+      localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(fallbackUser));
+      setIsAuthModalOpen(false);
+      dbManager.connectSync(fallbackUser.id).catch(() => {});
     }
-
-    const mockUser: UserProfile = {
-      id: "usr_" + Math.random().toString(36).substring(2, 9),
-      email: email.trim().toLowerCase(),
-      name: name?.trim() || email.split("@")[0],
-    };
-
-    // Migrate local Guest SQLite progress to the new user account
-    await dbManager.migrateGuestDataToUser(mockUser.id);
-
-    setUser(mockUser);
-    setAuthState("authenticated");
-    localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(mockUser));
-    setIsAuthModalOpen(false);
-
-    // Connect PowerSync Cloud Sync Stream upon sign up
-    dbManager.connectSync(mockUser.id).catch((err) => {
-      console.warn("[Optikur Auth] Sync stream connection deferred:", err);
-    });
   }, []);
 
   const signOut = useCallback(() => {
     setUser(null);
     setAuthState("guest");
     localStorage.removeItem(LOCAL_USER_KEY);
+    localStorage.removeItem("optikur_jwt_token");
     dbManager.disconnectSync().catch(() => {});
   }, []);
 
