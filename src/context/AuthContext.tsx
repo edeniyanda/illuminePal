@@ -12,13 +12,15 @@ export interface UserProfile {
   token?: string;
 }
 
+export type LogoutReason = "synced" | "unsynced" | "offline" | null;
+
 interface AuthContextType {
   authState: AuthState;
   user: UserProfile | null;
   isAuthModalOpen: boolean;
   authError: string | null;
   isLogoutModalOpen: boolean;
-  logoutReason: "offline" | "unsynced" | null;
+  logoutReason: LogoutReason;
   openAuthModal: () => void;
   closeAuthModal: () => void;
   signIn: (email: string, password?: string) => Promise<void>;
@@ -54,7 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState<boolean>(false);
-  const [logoutReason, setLogoutReason] = useState<"offline" | "unsynced" | null>(null);
+  const [logoutReason, setLogoutReason] = useState<LogoutReason>(null);
 
   // Restore saved session on boot & initialize local SQLite database
   useEffect(() => {
@@ -139,17 +141,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     const isOffline = typeof navigator !== "undefined" && !navigator.onLine;
+
+    // Trigger real-time delta sync attempt before inspecting sync status
+    if (!isOffline) {
+      await syncManager.triggerSync().catch(() => {});
+    }
+
     const pendingSync = await dbManager.hasPendingSync();
 
     if (isOffline) {
       setLogoutReason("offline");
-      setIsLogoutModalOpen(true);
     } else if (pendingSync) {
       setLogoutReason("unsynced");
-      setIsLogoutModalOpen(true);
     } else {
-      signOut();
+      setLogoutReason("synced");
     }
+
+    setIsLogoutModalOpen(true);
   }, [user, signOut]);
 
   const confirmSignOut = useCallback(
