@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { dbManager } from "../db/db";
+import { syncManager } from "../services/SyncManager";
 
 export type AuthState = "guest" | "authenticating" | "authenticated" | "offline";
 
@@ -32,11 +33,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const LOCAL_USER_KEY = "optikur_auth_user";
 
-/**
- * Resilient multi-endpoint fetch wrapper.
- * Tries local server (http://localhost:4000/api) and cloud server (https://optikur-backend.onrender.com/api)
- * so dev server and cloud backend work seamlessly.
- */
 async function authFetch(path: string, options: RequestInit = {}): Promise<Response> {
   const configuredUrl = (import.meta.env.VITE_API_URL || "http://localhost:4000/api").replace(/\/+$/, "");
   const fallbackUrl = configuredUrl.includes("localhost")
@@ -60,19 +56,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState<boolean>(false);
   const [logoutReason, setLogoutReason] = useState<"offline" | "unsynced" | null>(null);
 
-  // Restore saved session on boot & initiate PowerSync stream if authenticated
+  // Restore saved session on boot & initialize local SQLite database
   useEffect(() => {
     try {
       const savedUser = localStorage.getItem(LOCAL_USER_KEY);
       const token = localStorage.getItem("optikur_jwt_token");
+
       if (savedUser) {
         const parsed: UserProfile = JSON.parse(savedUser);
         console.log(`[Optikur Auth Session Restored]: ${parsed.email} (${parsed.id})`);
         setUser(parsed);
         setAuthState("authenticated");
-        dbManager.connectSync(parsed.id).catch(() => {});
+        dbManager.init(parsed.id).catch(() => {});
+        syncManager.startAutoSync();
 
-        // Verify token in background without destroying valid local sessions on transient errors
+        // Background token verification & cloud dataset hydration check
         if (token) {
           authFetch("/auth/me", {
             headers: { Authorization: `Bearer ${token}` },
@@ -84,9 +82,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             })
             .catch(() => {});
         }
+      } else {
+        dbManager.init(null).catch(() => {});
       }
     } catch (err) {
       console.warn("[Optikur Auth] Failed to restore session from localStorage:", err);
+      dbManager.init(null).catch(() => {});
     }
   }, []);
 
@@ -105,7 +106,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = useCallback(async () => {
     const currentUserId = user?.id;
-    console.log("[Optikur Auth] Signing out current user...");
+    console.log("[Optikur Auth] Signing out current user & purging local database...");
+    syncManager.stopAutoSync();
+
     setUser(null);
     setAuthState("guest");
     setAuthError(null);
@@ -121,9 +124,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       sessionStorage.clear();
     }
 
-    await dbManager.clearUserLocalData(currentUserId);
-    await dbManager.disconnectSync().catch(() => {});
-    console.log("[Optikur Auth] Sign out completed cleanly. Local database and session reset to Guest mode.");
+    // Purge local user SQLite database & reset to Guest mode
+    await dbManager.purgeLocalDatabase(currentUserId);
+    console.log("[Optikur Auth] Sign out completed cleanly. Local database purged and reset to Guest mode.");
   }, [user]);
 
   const requestSignOut = useCallback(async () => {
@@ -157,7 +160,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLogoutModalOpen(false);
     setLogoutReason(null);
     if (user?.id) {
-      dbManager.connectSync(user.id).catch(() => {});
+      dbManager.init(user.id).catch(() => {});
     }
   }, [user]);
 
@@ -207,14 +210,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.setItem("optikur_jwt_token", data.token);
       }
       setIsAuthModalOpen(false);
+      syncManager.startAutoSync();
 
-      // Background non-blocking SQLite migration & PowerSync sync stream
-      dbManager
-        .migrateGuestDataToUser(authenticatedUser.id)
-        .then(() => dbManager.connectSync(authenticatedUser.id))
-        .catch((err) => {
-          console.warn("[Optikur Auth] Sync stream connection deferred:", err);
-        });
+      // Hydrate local SQLite database with cloud user data
+      if (data.token) {
+        authFetch("/sync/hydrate", {
+          headers: { Authorization: `Bearer ${data.token}` },
+        })
+          .then(async (hydrateRes) => {
+            if (hydrateRes.ok) {
+              const hydrationPayload = await hydrateRes.json();
+              await dbManager.populateCloudHydrationData(hydrationPayload, authenticatedUser.id);
+            }
+          })
+          .catch((err) => {
+            console.warn("[Optikur Auth] Cloud dataset hydration deferred:", err);
+            dbManager.init(authenticatedUser.id).catch(() => {});
+          });
+      } else {
+        dbManager.init(authenticatedUser.id).catch(() => {});
+      }
     } catch (err: any) {
       console.error("❌ [Optikur Auth Sign In Error]:", err);
       setAuthError("Unable to connect to authentication server. Please check your connection.");
@@ -274,13 +289,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       setIsAuthModalOpen(false);
 
-      // Background non-blocking SQLite migration & PowerSync sync stream
-      dbManager
-        .migrateGuestDataToUser(newUser.id)
-        .then(() => dbManager.connectSync(newUser.id))
-        .catch((err) => {
-          console.warn("[Optikur Auth] Sync stream connection deferred:", err);
+      if (data.token) {
+        syncManager.migrateGuestToAccount(data.token, newUser.id).then(() => {
+          syncManager.startAutoSync();
         });
+      } else {
+        dbManager.init(newUser.id).catch(() => {});
+      }
     } catch (err: any) {
       console.error("❌ [Optikur Auth Sign Up Error]:", err);
       setAuthError("Unable to connect to authentication server. Please check your connection.");

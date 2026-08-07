@@ -10,6 +10,7 @@ import SettingsPage from "./pages/SettingsPage";
 import BreakOverlay from "./components/BreakOverlay";
 import AuthModal from "./components/AuthModal";
 import LogoutModal from "./components/LogoutModal";
+import ProfileModal from "./components/ProfileModal";
 import WelcomeScreen from "./components/WelcomeScreen";
 import { TimerProvider } from "./context/TimerContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -51,6 +52,9 @@ function AppContent() {
 
       {/* Glassmorphic Auth System Modal */}
       <AuthModal />
+
+      {/* Account Profile & Security Settings Modal */}
+      <ProfileModal />
 
       {/* Unsynced Data Protection Logout Modal */}
       <LogoutModal />

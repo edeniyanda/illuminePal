@@ -112,9 +112,9 @@ export default function TopBar({ activeTab }: TopBarProps) {
         {authState === "authenticated" && user ? (
           <div className="flex items-center gap-1.5">
             <button
-              onClick={openAuthModal}
+              onClick={() => window.dispatchEvent(new CustomEvent("optikur:open-profile"))}
               className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-full text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 transition-all shadow-xs cursor-pointer"
-              title={`Signed in as ${user.email} (Local SQLite Synced)`}
+              title={`Signed in as ${user.email} (Click to manage profile)`}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               <div className="w-4 h-4 rounded-full bg-sky-500 text-[9px] font-bold text-white flex items-center justify-center uppercase">
