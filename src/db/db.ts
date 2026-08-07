@@ -193,18 +193,34 @@ export class DatabaseManager {
   public async purgeLocalDatabase(userId?: string | null): Promise<void> {
     try {
       await this.init(userId);
-      if (this.db) {
-        await this.db.execute(`DELETE FROM break_logs`);
-        await this.db.execute(`DELETE FROM daily_stats`);
-        await this.db.execute(`DELETE FROM user_settings`);
+      const activeDb = this.db;
+      if (activeDb) {
+        await activeDb.execute(`DELETE FROM break_logs`);
+        await activeDb.execute(`DELETE FROM daily_stats`);
+        await activeDb.execute(`DELETE FROM user_settings`);
+        try {
+          await activeDb.disconnect();
+        } catch {}
+        this.db = null;
         console.log(`🗑️ [Optikur Local DB] Purged all local SQLite table records for: ${userId || "guest"}`);
+      }
+
+      // Also purge guest database to ensure Guest Mode is 100% clean
+      this.currentUserId = null;
+      this.initPromise = null;
+      await this.init(null);
+      const guestDb = this.db;
+      if (guestDb) {
+        await guestDb.execute(`DELETE FROM break_logs`);
+        await guestDb.execute(`DELETE FROM daily_stats`);
+        await guestDb.execute(`DELETE FROM user_settings`);
+        console.log(`🗑️ [Optikur Local DB] Purged Guest SQLite database for fresh guest mode.`);
       }
     } catch (err) {
       console.warn("[Optikur Local DB] Purge local database warning:", err);
     } finally {
       this.currentUserId = null;
-      // Re-initialize clean guest database
-      await this.init(null).catch(() => {});
+      this.initPromise = null;
     }
   }
 

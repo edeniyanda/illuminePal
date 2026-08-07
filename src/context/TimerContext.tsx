@@ -148,9 +148,7 @@ export const TimerProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       try {
         const todayStr = new Date().toISOString().split("T")[0];
         const breaksInDb = await dbManager.getBreaksToday(todayStr, user?.id);
-        if (breaksInDb > 0) {
-          setTotalBreaksToday(breaksInDb);
-        }
+        setTotalBreaksToday(breaksInDb);
       } catch (err) {
         console.warn("[Optikur DB] Boot stats sync deferred:", err);
       }

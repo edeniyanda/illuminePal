@@ -106,7 +106,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = useCallback(async () => {
     const currentUserId = user?.id;
-    console.log("[Optikur Auth] Signing out current user & purging local database...");
+    console.log("[Optikur Auth] Signing out current user & purging all local session data...");
     syncManager.stopAutoSync();
 
     setUser(null);
@@ -117,16 +117,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLogoutReason(null);
 
     // Thorough storage & session cleanup for clean user switching
-    localStorage.removeItem(LOCAL_USER_KEY);
-    localStorage.removeItem("optikur_jwt_token");
-    localStorage.removeItem("optikur_guest_migrated");
+    localStorage.clear();
     if (typeof sessionStorage !== "undefined") {
       sessionStorage.clear();
     }
 
-    // Purge local user SQLite database & reset to Guest mode
+    // Purge local user & guest SQLite database partitions completely
     await dbManager.purgeLocalDatabase(currentUserId);
-    console.log("[Optikur Auth] Sign out completed cleanly. Local database purged and reset to Guest mode.");
+    console.log("[Optikur Auth] Sign out completed cleanly. All local databases purged.");
+
+    // Refresh application state completely so all React component memory states reset fresh
+    if (typeof window !== "undefined") {
+      window.location.reload();
+    }
   }, [user]);
 
   const requestSignOut = useCallback(async () => {

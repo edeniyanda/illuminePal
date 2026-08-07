@@ -15,6 +15,15 @@ const PORT = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 
+// Graceful JSON syntax error parser middleware
+app.use((err: any, _req: Request, res: Response, next: any) => {
+  if (err instanceof SyntaxError && "body" in err) {
+    console.warn("[Optikur Server Warning]: Received malformed JSON request body payload.");
+    return res.status(400).json({ error: "Invalid JSON body payload format." });
+  }
+  next(err);
+});
+
 // Health Check Endpoint
 app.get("/health", (_req: Request, res: Response) => {
   res.json({
